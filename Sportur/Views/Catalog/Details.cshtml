@@ -1,0 +1,48 @@
+﻿@model Sportur.Models.BicycleModel
+
+<h2>@Model.Brand @Model.ModelName</h2>
+<p>@Model.Category?.Name</p>
+
+<div class="row">
+    <!-- Левая часть: фото -->
+    <div class="col-md-6">
+        <img id="bikeImage"
+             src="@Model.Colors.First().PhotoUrl"
+             class="img-fluid"
+             alt="Фото велосипеда" />
+    </div>
+
+    <!-- Правая часть: выбор -->
+    <div class="col-md-6">
+
+        <h4>Выберите цвет</h4>
+        <div>
+            @foreach (var color in Model.Colors)
+            {
+                <button class="btn btn-outline-secondary me-2 mb-2"
+                        onclick="changeColor('@color.PhotoUrl')">
+                    @color.Color
+                </button>
+            }
+        </div>
+
+        <h4 class="mt-3">Ростовка</h4>
+        <select id="sizeSelect" class="form-select">
+            @foreach (var size in Model.Sizes)
+            {
+                <option value="@size.Id" data-price="@size.Price">
+                    @size.FrameSize — @size.Price ₽
+                </option>
+            }
+        </select>
+
+        <h3 class="mt-3">
+            Цена: <span id="price">@Model.Sizes.First().Price</span> ₽
+        </h3>
+
+        <button class="btn btn-success mt-3">
+            В корзину
+        </button>
+
+    </div>
+</div>

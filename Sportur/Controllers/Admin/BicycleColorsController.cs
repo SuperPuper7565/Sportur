@@ -7,25 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
 
-namespace Sportur.Controllers
+namespace Sportur.Controllers.Admin
 {
-    public class BicycleSizesController : Controller
+    public class BicycleColorsController : Controller
     {
         private readonly SporturDbContext _context;
 
-        public BicycleSizesController(SporturDbContext context)
+        public BicycleColorsController(SporturDbContext context)
         {
             _context = context;
         }
 
-        // GET: BicycleSizes
+        // GET: BicycleColors
         public async Task<IActionResult> Index()
         {
-            var sporturDbContext = _context.BicycleSizes.Include(b => b.BicycleModel);
+            var sporturDbContext = _context.BicycleColors.Include(b => b.BicycleModel);
             return View(await sporturDbContext.ToListAsync());
         }
 
-        // GET: BicycleSizes/Details/5
+        // GET: BicycleColors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,42 +33,42 @@ namespace Sportur.Controllers
                 return NotFound();
             }
 
-            var bicycleSize = await _context.BicycleSizes
+            var bicycleColor = await _context.BicycleColors
                 .Include(b => b.BicycleModel)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (bicycleSize == null)
+            if (bicycleColor == null)
             {
                 return NotFound();
             }
 
-            return View(bicycleSize);
+            return View(bicycleColor);
         }
 
-        // GET: BicycleSizes/Create
+        // GET: BicycleColors/Create
         public IActionResult Create()
         {
             ViewData["BicycleModelId"] = new SelectList(_context.BicycleModels, "Id", "Brakes");
             return View();
         }
 
-        // POST: BicycleSizes/Create
+        // POST: BicycleColors/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BicycleModelId,FrameSize,StockQuantity,Price")] BicycleSize bicycleSize)
+        public async Task<IActionResult> Create([Bind("Id,BicycleModelId,Color,PhotoUrl,IsAvailable")] BicycleColor bicycleColor)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(bicycleSize);
+                _context.Add(bicycleColor);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BicycleModelId"] = new SelectList(_context.BicycleModels, "Id", "Brakes", bicycleSize.BicycleModelId);
-            return View(bicycleSize);
+            ViewData["BicycleModelId"] = new SelectList(_context.BicycleModels, "Id", "Brakes", bicycleColor.BicycleModelId);
+            return View(bicycleColor);
         }
 
-        // GET: BicycleSizes/Edit/5
+        // GET: BicycleColors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,23 +76,23 @@ namespace Sportur.Controllers
                 return NotFound();
             }
 
-            var bicycleSize = await _context.BicycleSizes.FindAsync(id);
-            if (bicycleSize == null)
+            var bicycleColor = await _context.BicycleColors.FindAsync(id);
+            if (bicycleColor == null)
             {
                 return NotFound();
             }
-            ViewData["BicycleModelId"] = new SelectList(_context.BicycleModels, "Id", "Brakes", bicycleSize.BicycleModelId);
-            return View(bicycleSize);
+            ViewData["BicycleModelId"] = new SelectList(_context.BicycleModels, "Id", "Brakes", bicycleColor.BicycleModelId);
+            return View(bicycleColor);
         }
 
-        // POST: BicycleSizes/Edit/5
+        // POST: BicycleColors/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BicycleModelId,FrameSize,StockQuantity,Price")] BicycleSize bicycleSize)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,BicycleModelId,Color,PhotoUrl,IsAvailable")] BicycleColor bicycleColor)
         {
-            if (id != bicycleSize.Id)
+            if (id != bicycleColor.Id)
             {
                 return NotFound();
             }
@@ -101,12 +101,12 @@ namespace Sportur.Controllers
             {
                 try
                 {
-                    _context.Update(bicycleSize);
+                    _context.Update(bicycleColor);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BicycleSizeExists(bicycleSize.Id))
+                    if (!BicycleColorExists(bicycleColor.Id))
                     {
                         return NotFound();
                     }
@@ -117,11 +117,11 @@ namespace Sportur.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BicycleModelId"] = new SelectList(_context.BicycleModels, "Id", "Brakes", bicycleSize.BicycleModelId);
-            return View(bicycleSize);
+            ViewData["BicycleModelId"] = new SelectList(_context.BicycleModels, "Id", "Brakes", bicycleColor.BicycleModelId);
+            return View(bicycleColor);
         }
 
-        // GET: BicycleSizes/Delete/5
+        // GET: BicycleColors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -129,35 +129,35 @@ namespace Sportur.Controllers
                 return NotFound();
             }
 
-            var bicycleSize = await _context.BicycleSizes
+            var bicycleColor = await _context.BicycleColors
                 .Include(b => b.BicycleModel)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (bicycleSize == null)
+            if (bicycleColor == null)
             {
                 return NotFound();
             }
 
-            return View(bicycleSize);
+            return View(bicycleColor);
         }
 
-        // POST: BicycleSizes/Delete/5
+        // POST: BicycleColors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var bicycleSize = await _context.BicycleSizes.FindAsync(id);
-            if (bicycleSize != null)
+            var bicycleColor = await _context.BicycleColors.FindAsync(id);
+            if (bicycleColor != null)
             {
-                _context.BicycleSizes.Remove(bicycleSize);
+                _context.BicycleColors.Remove(bicycleColor);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BicycleSizeExists(int id)
+        private bool BicycleColorExists(int id)
         {
-            return _context.BicycleSizes.Any(e => e.Id == id);
+            return _context.BicycleColors.Any(e => e.Id == id);
         }
     }
 }

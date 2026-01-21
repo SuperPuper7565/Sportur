@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
 using Sportur.Models;
 
-namespace Sportur.Controllers
+namespace Sportur.Controllers.Admin
 {
     public class BicycleModelsController : Controller
     {

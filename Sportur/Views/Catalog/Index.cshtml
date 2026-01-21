@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Sportur.Models.ViewModels.BicycleCatalogItemViewModel>
+
+<h2>Каталог велосипедов</h2>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+
+                @if (!string.IsNullOrEmpty(item.PreviewImageUrl))
+                {
+                    <img src="@item.PreviewImageUrl"
+                         class="card-img-top"
+                         alt="@item.ModelName" />
+                }
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Велосипед @item.Brand @item.ModelName
+                    </h5>
+
+                    <p class="card-text">
+                        @item.CategoryName
+                    </p>
+
+                    <p class="card-text">
+                        <strong>от @item.MinPrice ₽</strong>
+                    </p>
+
+                    <p class="card-text text-muted">
+                        Цветов: @item.ColorsCount
+                    </p>
+
+                    <a asp-action="Details"
+                       asp-route-id="@item.Id"
+                       class="btn btn-primary">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

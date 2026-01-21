@@ -1,4 +1,20 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function changeColor(photoUrl) {
+    const img = document.getElementById('bikeImage');
+    if (img) {
+        img.src = photoUrl;
+    }
+}
 
-// Write your JavaScript code.
+document.addEventListener('DOMContentLoaded', function () {
+    const sizeSelect = document.getElementById('sizeSelect');
+    const priceSpan = document.getElementById('price');
+
+    if (!sizeSelect || !priceSpan) return;
+
+    sizeSelect.addEventListener('change', function () {
+        const price =
+            this.options[this.selectedIndex].dataset.price;
+
+        priceSpan.innerText = price;
+    });
+});

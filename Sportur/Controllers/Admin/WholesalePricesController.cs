@@ -6,26 +6,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
+using Sportur.Models;
 
-namespace Sportur.Controllers
+namespace Sportur.Controllers.Admin
 {
-    public class CategoriesController : Controller
+    public class WholesalePricesController : Controller
     {
         private readonly SporturDbContext _context;
 
-        public CategoriesController(SporturDbContext context)
+        public WholesalePricesController(SporturDbContext context)
         {
             _context = context;
         }
 
-        // GET: Categories
+        // GET: WholesalePrices
         public async Task<IActionResult> Index()
         {
-            var sporturDbContext = _context.Categories.Include(c => c.ParentCategory);
+            var sporturDbContext = _context.WholesalePrices.Include(w => w.BicycleSize).Include(w => w.User);
             return View(await sporturDbContext.ToListAsync());
         }
 
-        // GET: Categories/Details/5
+        // GET: WholesalePrices/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,42 +34,45 @@ namespace Sportur.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .Include(c => c.ParentCategory)
+            var wholesalePrice = await _context.WholesalePrices
+                .Include(w => w.BicycleSize)
+                .Include(w => w.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (wholesalePrice == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(wholesalePrice);
         }
 
-        // GET: Categories/Create
+        // GET: WholesalePrices/Create
         public IActionResult Create()
         {
-            ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["BicycleSizeId"] = new SelectList(_context.BicycleSizes, "Id", "FrameSize");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name");
             return View();
         }
 
-        // POST: Categories/Create
+        // POST: WholesalePrices/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,ParentCategoryId")] Category category)
+        public async Task<IActionResult> Create([Bind("Id,BicycleSizeId,UserId,Price")] WholesalePrice wholesalePrice)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
+                _context.Add(wholesalePrice);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
-            return View(category);
+            ViewData["BicycleSizeId"] = new SelectList(_context.BicycleSizes, "Id", "FrameSize", wholesalePrice.BicycleSizeId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", wholesalePrice.UserId);
+            return View(wholesalePrice);
         }
 
-        // GET: Categories/Edit/5
+        // GET: WholesalePrices/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,23 +80,24 @@ namespace Sportur.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+            var wholesalePrice = await _context.WholesalePrices.FindAsync(id);
+            if (wholesalePrice == null)
             {
                 return NotFound();
             }
-            ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
-            return View(category);
+            ViewData["BicycleSizeId"] = new SelectList(_context.BicycleSizes, "Id", "FrameSize", wholesalePrice.BicycleSizeId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", wholesalePrice.UserId);
+            return View(wholesalePrice);
         }
 
-        // POST: Categories/Edit/5
+        // POST: WholesalePrices/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ParentCategoryId")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,BicycleSizeId,UserId,Price")] WholesalePrice wholesalePrice)
         {
-            if (id != category.Id)
+            if (id != wholesalePrice.Id)
             {
                 return NotFound();
             }
@@ -101,12 +106,12 @@ namespace Sportur.Controllers
             {
                 try
                 {
-                    _context.Update(category);
+                    _context.Update(wholesalePrice);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.Id))
+                    if (!WholesalePriceExists(wholesalePrice.Id))
                     {
                         return NotFound();
                     }
@@ -117,11 +122,12 @@ namespace Sportur.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
-            return View(category);
+            ViewData["BicycleSizeId"] = new SelectList(_context.BicycleSizes, "Id", "FrameSize", wholesalePrice.BicycleSizeId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", wholesalePrice.UserId);
+            return View(wholesalePrice);
         }
 
-        // GET: Categories/Delete/5
+        // GET: WholesalePrices/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -129,35 +135,36 @@ namespace Sportur.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .Include(c => c.ParentCategory)
+            var wholesalePrice = await _context.WholesalePrices
+                .Include(w => w.BicycleSize)
+                .Include(w => w.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (wholesalePrice == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(wholesalePrice);
         }
 
-        // POST: Categories/Delete/5
+        // POST: WholesalePrices/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var wholesalePrice = await _context.WholesalePrices.FindAsync(id);
+            if (wholesalePrice != null)
             {
-                _context.Categories.Remove(category);
+                _context.WholesalePrices.Remove(wholesalePrice);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        private bool WholesalePriceExists(int id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _context.WholesalePrices.Any(e => e.Id == id);
         }
     }
 }
