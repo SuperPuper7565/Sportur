@@ -9,11 +9,17 @@ namespace Sportur.Context
             : base(options) { }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Category> Categories { get; set; }
+
+        // Убираем Category, так как теперь это enum
+        // public DbSet<Category> Categories { get; set; }
 
         public DbSet<BicycleModel> BicycleModels { get; set; }
         public DbSet<BicycleColor> BicycleColors { get; set; }
         public DbSet<BicycleSize> BicycleSizes { get; set; }
+        public DbSet<BicycleVariant> BicycleVariants { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         public DbSet<WholesalePrice> WholesalePrices { get; set; }
 
@@ -21,29 +27,77 @@ namespace Sportur.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            // Category self-reference
-            modelBuilder.Entity<Category>()
-                .HasOne(c => c.ParentCategory)
-                .WithMany(c => c.Children)
-                .HasForeignKey(c => c.ParentCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+            // =======================
             // BicycleModel → Colors
+            // =======================
             modelBuilder.Entity<BicycleColor>()
                 .HasOne(c => c.BicycleModel)
                 .WithMany(m => m.Colors)
-                .HasForeignKey(c => c.BicycleModelId);
+                .HasForeignKey(c => c.BicycleModelId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            // =======================
             // BicycleModel → Sizes
+            // =======================
             modelBuilder.Entity<BicycleSize>()
                 .HasOne(s => s.BicycleModel)
                 .WithMany(m => m.Sizes)
-                .HasForeignKey(s => s.BicycleModelId);
+                .HasForeignKey(s => s.BicycleModelId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // WholesalePrice uniqueness
-            modelBuilder.Entity<WholesalePrice>()
-                .HasIndex(w => new { w.BicycleSizeId, w.UserId })
+            // =======================
+            // BicycleVariant (SKU)
+            // =======================
+            modelBuilder.Entity<BicycleVariant>()
+                .HasOne(v => v.BicycleModel)
+                .WithMany(m => m.Variants)
+                .HasForeignKey(v => v.BicycleModelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<BicycleVariant>()
+                .HasOne(v => v.BicycleColor)
+                .WithMany()
+                .HasForeignKey(v => v.BicycleColorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BicycleVariant>()
+                .HasOne(v => v.BicycleSize)
+                .WithMany()
+                .HasForeignKey(v => v.BicycleSizeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BicycleVariant>()
+                .HasIndex(v => new
+                {
+                    v.BicycleModelId,
+                    v.BicycleColorId,
+                    v.BicycleSizeId
+                })
                 .IsUnique();
+
+            // =======================
+            // Orders
+            // =======================
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.BicycleVariant)
+                .WithMany()
+                .HasForeignKey(oi => oi.BicycleVariantId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // =======================
+            // Wholesale prices
+            // =======================
+            modelBuilder.Entity<WholesalePrice>()
+                .HasOne(w => w.BicycleVariant)
+                .WithMany()
+                .HasForeignKey(w => w.BicycleVariantId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

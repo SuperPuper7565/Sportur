@@ -1,0 +1,78 @@
+﻿@model List<Sportur.Models.Cart.CartItem>
+
+<h2>Корзина</h2>
+
+@if (!Model.Any())
+{
+    <p>Корзина пуста</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Модель</th>
+                <th>Цвет</th>
+                <th>Ростовка</th>
+                <th>Цена</th>
+                <th class="text-center">Кол-во</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@item.PhotoUrl" width="80" />
+                    </td>
+
+                    <td>@item.ModelName</td>
+                    <td>@item.Color</td>
+                    <td>@item.FrameSize</td>
+
+                    <td>
+                        @(item.Price* item.Quantity) ₽
+                    </td>
+
+                    <td class="text-center">
+                        <a asp-action="Decrease"
+                           asp-route-variantId="@item.VariantId"
+                           class="btn btn-sm btn-outline-secondary">
+                            −
+                        </a>
+
+                        <span class="mx-2">@item.Quantity</span>
+
+                        <a asp-action="Increase"
+                           asp-route-variantId="@item.VariantId"
+                           class="btn btn-sm btn-outline-secondary
+                                          @(item.Quantity >= item.StockQuantity ? "disabled" : "")">
+                            +
+                        </a>
+                    </td>
+
+                    <td>
+                        <a asp-action="Remove"
+                           asp-route-variantId="@item.VariantId"
+                           class="btn btn-sm btn-danger">
+                            ✕
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3 class="text-end">
+        Итого: <strong>@Model.Sum(x => x.Price * x.Quantity) ₽</strong>
+    </h3>
+
+    <form asp-controller="Order" asp-action="Checkout" method="post">
+        <button type="submit" class="btn btn-success btn-lg">
+            Оформить заказ
+        </button>
+    </form>
+
+}

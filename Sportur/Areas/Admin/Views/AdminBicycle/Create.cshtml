@@ -1,0 +1,59 @@
+﻿@model Sportur.Models.BicycleModel
+@using Sportur.Models
+
+<h2>Добавить велосипед</h2>
+
+<form asp-action="Create" method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div>
+        <label>Бренд</label>
+        <input asp-for="Brand" />
+    </div>
+
+    <div>
+        <label>Модель</label>
+        <input asp-for="ModelName" />
+    </div>
+
+    <div>
+        <label>Категория</label>
+        <select asp-for="Category"
+                asp-items="Html.GetEnumSelectList<BicycleCategory>()">
+        </select>
+    </div>
+
+    <div>
+        <label>Описание</label>
+        <textarea asp-for="Description" rows="4"></textarea>
+    </div>
+
+    <div>
+        <label>Передачи</label>
+        <input asp-for="GearCount" type="number" />
+    </div>
+
+    <div>
+        <label>Диаметр колёс</label>
+        <input asp-for="WheelDiameter" />
+    </div>
+
+    <div>
+        <label>Материал рамы</label>
+        <input asp-for="FrameMaterial" />
+    </div>
+
+    <div>
+        <label>Вилка</label>
+        <input asp-for="Fork" />
+    </div>
+
+    <div>
+        <label>Тормоза</label>
+        <input asp-for="Brakes" />
+    </div>
+
+    <button type="submit">Создать</button>
+    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+</form>

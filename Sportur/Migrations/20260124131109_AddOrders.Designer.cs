@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sportur.Context;
 
@@ -11,9 +12,11 @@ using Sportur.Context;
 namespace Sportur.Migrations
 {
     [DbContext(typeof(SporturDbContext))]
-    partial class SporturDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260124131109_AddOrders")]
+    partial class AddOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,6 +40,9 @@ namespace Sportur.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
@@ -66,11 +72,40 @@ namespace Sportur.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BicycleModelId");
 
                     b.ToTable("BicycleSizes");
+                });
+
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Sportur.Models.BicycleModel", b =>
@@ -91,7 +126,7 @@ namespace Sportur.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Category")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -124,45 +159,9 @@ namespace Sportur.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("BicycleModels");
-                });
-
-            modelBuilder.Entity("Sportur.Models.BicycleVariant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BicycleColorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BicycleModelId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BicycleSizeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BicycleColorId");
-
-                    b.HasIndex("BicycleSizeId");
-
-                    b.HasIndex("BicycleModelId", "BicycleColorId", "BicycleSizeId")
-                        .IsUnique();
-
-                    b.ToTable("BicycleVariants");
                 });
 
             modelBuilder.Entity("Sportur.Models.Order", b =>
@@ -173,14 +172,14 @@ namespace Sportur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("OrderDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("UserId")
@@ -201,7 +200,10 @@ namespace Sportur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BicycleVariantId")
+                    b.Property<int>("BicycleColorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BicycleSizeId")
                         .HasColumnType("int");
 
                     b.Property<int>("OrderId")
@@ -215,7 +217,9 @@ namespace Sportur.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BicycleVariantId");
+                    b.HasIndex("BicycleColorId");
+
+                    b.HasIndex("BicycleSizeId");
 
                     b.HasIndex("OrderId");
 
@@ -230,7 +234,7 @@ namespace Sportur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BicycleVariantId")
+                    b.Property<int>("BicycleSizeId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -241,9 +245,10 @@ namespace Sportur.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BicycleVariantId");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("BicycleSizeId", "UserId")
+                        .IsUnique();
 
                     b.ToTable("WholesalePrices");
                 });
@@ -267,10 +272,6 @@ namespace Sportur.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -306,31 +307,25 @@ namespace Sportur.Migrations
                     b.Navigation("BicycleModel");
                 });
 
-            modelBuilder.Entity("Sportur.Models.BicycleVariant", b =>
+            modelBuilder.Entity("Category", b =>
                 {
-                    b.HasOne("BicycleColor", "BicycleColor")
-                        .WithMany()
-                        .HasForeignKey("BicycleColorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasOne("Category", "ParentCategory")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Sportur.Models.BicycleModel", "BicycleModel")
-                        .WithMany("Variants")
-                        .HasForeignKey("BicycleModelId")
+                    b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("Sportur.Models.BicycleModel", b =>
+                {
+                    b.HasOne("Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BicycleSize", "BicycleSize")
-                        .WithMany()
-                        .HasForeignKey("BicycleSizeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("BicycleColor");
-
-                    b.Navigation("BicycleModel");
-
-                    b.Navigation("BicycleSize");
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Sportur.Models.Order", b =>
@@ -344,9 +339,15 @@ namespace Sportur.Migrations
 
             modelBuilder.Entity("Sportur.Models.OrderItem", b =>
                 {
-                    b.HasOne("Sportur.Models.BicycleVariant", "BicycleVariant")
+                    b.HasOne("BicycleColor", "BicycleColor")
                         .WithMany()
-                        .HasForeignKey("BicycleVariantId")
+                        .HasForeignKey("BicycleColorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BicycleSize", "BicycleSize")
+                        .WithMany()
+                        .HasForeignKey("BicycleSizeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -356,17 +357,19 @@ namespace Sportur.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BicycleVariant");
+                    b.Navigation("BicycleColor");
+
+                    b.Navigation("BicycleSize");
 
                     b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Sportur.Models.WholesalePrice", b =>
                 {
-                    b.HasOne("Sportur.Models.BicycleVariant", "BicycleVariant")
+                    b.HasOne("BicycleSize", "BicycleSize")
                         .WithMany()
-                        .HasForeignKey("BicycleVariantId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("BicycleSizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("User", "User")
@@ -375,9 +378,14 @@ namespace Sportur.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BicycleVariant");
+                    b.Navigation("BicycleSize");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("Sportur.Models.BicycleModel", b =>
@@ -385,8 +393,6 @@ namespace Sportur.Migrations
                     b.Navigation("Colors");
 
                     b.Navigation("Sizes");
-
-                    b.Navigation("Variants");
                 });
 
             modelBuilder.Entity("Sportur.Models.Order", b =>

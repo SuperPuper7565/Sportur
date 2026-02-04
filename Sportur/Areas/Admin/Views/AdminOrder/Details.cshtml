@@ -1,0 +1,33 @@
+﻿@model Sportur.Models.Order
+
+<h2>Заказ #@Model.Id</h2>
+<p>Дата: @Model.OrderDate.ToString("yyyy-MM-dd HH:mm")</p>
+<p>Пользователь: @(Model.User?.Email ?? "Guest")</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Модель</th>
+            <th>Цвет</th>
+            <th>Ростовка</th>
+            <th>Цена</th>
+            <th>Количество</th>
+            <th>Итого</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.BicycleVariant.BicycleModel.Brand @item.BicycleVariant.BicycleModel.ModelName</td>
+                <td>@item.BicycleVariant.BicycleColor.Color</td>
+                <td>@item.BicycleVariant.BicycleSize.FrameSize</td>
+                <td>@item.BicycleVariant.Price ₽</td>
+                <td>@item.Quantity</td>
+                <td>@(item.Quantity* item.BicycleVariant.Price) ₽</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Общая сумма: @Model.Items.Sum(i => i.Quantity * i.BicycleVariant.Price) ₽</h4>

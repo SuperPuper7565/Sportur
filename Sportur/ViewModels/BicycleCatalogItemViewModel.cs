@@ -1,4 +1,6 @@
-﻿namespace Sportur.Models.ViewModels
+﻿using Sportur.Models;
+
+namespace Sportur.ViewModels
 {
     public class BicycleCatalogItemViewModel
     {
@@ -6,7 +8,7 @@
 
         public string Brand { get; set; }
         public string ModelName { get; set; }
-        public string CategoryName { get; set; }
+        public BicycleCategory Category { get; set; }
 
         public string PreviewImageUrl { get; set; }
 

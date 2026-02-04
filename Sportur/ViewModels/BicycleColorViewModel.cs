@@ -6,4 +6,6 @@
         public string Color { get; set; }
         public string PhotoUrl { get; set; }
     }
+
 }
+

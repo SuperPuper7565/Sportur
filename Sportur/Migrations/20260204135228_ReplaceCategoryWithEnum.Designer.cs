@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sportur.Context;
 
@@ -11,9 +12,11 @@ using Sportur.Context;
 namespace Sportur.Migrations
 {
     [DbContext(typeof(SporturDbContext))]
-    partial class SporturDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260204135228_ReplaceCategoryWithEnum")]
+    partial class ReplaceCategoryWithEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

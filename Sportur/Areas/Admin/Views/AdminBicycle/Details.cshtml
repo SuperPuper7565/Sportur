@@ -1,0 +1,54 @@
+﻿@model Sportur.Models.BicycleModel
+@using Sportur.Models
+
+<h2>Детали модели</h2>
+
+<table class="table table-striped">
+    <tr>
+        <th>Бренд</th>
+        <td>@Model.Brand</td>
+    </tr>
+
+    <tr>
+        <th>Модель</th>
+        <td>@Model.ModelName</td>
+    </tr>
+
+    <tr>
+        <th>Категория</th>
+        <td>@Html.DisplayFor(m => m.Category)</td>
+    </tr>
+
+    <tr>
+        <th>Количество передач</th>
+        <td>@Model.GearCount</td>
+    </tr>
+
+    <tr>
+        <th>Диаметр колес</th>
+        <td>@Model.WheelDiameter</td>
+    </tr>
+
+    <tr>
+        <th>Материал рамы</th>
+        <td>@Model.FrameMaterial</td>
+    </tr>
+
+    <tr>
+        <th>Вилка</th>
+        <td>@Model.Fork</td>
+    </tr>
+
+    <tr>
+        <th>Тормоза</th>
+        <td>@Model.Brakes</td>
+    </tr>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+    ✏️ Редактировать
+</a>
+
+<a asp-action="Index" class="btn btn-secondary">
+    ← Назад
+</a>

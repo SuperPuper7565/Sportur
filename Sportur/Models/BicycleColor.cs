@@ -16,6 +16,4 @@ public class BicycleColor
     [StringLength(500)]
     public string PhotoUrl { get; set; }
 
-
-    public bool IsAvailable { get; set; } = true;
 }

@@ -24,5 +24,8 @@ public class User
     [Required]
     public string PasswordHash { get; set; }
 
+    [Required]
+    public byte[] PasswordSalt { get; set; }
+    [Required]
     public UserRole Role { get; set; }
 }

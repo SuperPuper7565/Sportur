@@ -23,6 +23,37 @@
             <a asp-controller="Home" asp-action="Service">Гарантия и сервис</a>
             <a asp-controller="Home" asp-action="Contacts">Контакты</a>
         </nav>
+
+        <div class="auth">
+            @{
+                var userId = Context.Session.GetInt32("UserId");
+                var userName = Context.Session.GetString("UserName");
+                var role = Context.Session.GetString("UserRole");
+            }
+
+            @if (userId == null)
+            {
+                <a asp-controller="Account" asp-action="Login">Войти</a>
+                <a asp-controller="Account" asp-action="Register">Регистрация</a>
+            }
+            else
+            {
+                <span>Привет, @userName</span>
+
+                <a asp-controller="Order" asp-action="My">Мои заказы</a>
+
+                @if (role == "Admin")
+                {
+                    <a asp-area="Admin"
+                       asp-controller="AdminOrder"
+                       asp-action="Index">
+                        Админка
+                    </a>
+                }
+
+                <a asp-controller="Account" asp-action="Logout">Выйти</a>
+            }
+        </div>
     </header>
 
     <main class="container">
@@ -34,7 +65,6 @@
     </footer>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     @RenderSection("Scripts", required: false)
 </body>
 </html>

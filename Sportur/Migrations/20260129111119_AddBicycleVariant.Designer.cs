@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sportur.Context;
 
@@ -11,9 +12,11 @@ using Sportur.Context;
 namespace Sportur.Migrations
 {
     [DbContext(typeof(SporturDbContext))]
-    partial class SporturDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260129111119_AddBicycleVariant")]
+    partial class AddBicycleVariant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,6 +76,29 @@ namespace Sportur.Migrations
                     b.ToTable("BicycleSizes");
                 });
 
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("Sportur.Models.BicycleModel", b =>
                 {
                     b.Property<int>("Id")
@@ -91,7 +117,7 @@ namespace Sportur.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Category")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -123,6 +149,8 @@ namespace Sportur.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("BicycleModels");
                 });
@@ -173,14 +201,14 @@ namespace Sportur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("OrderDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("UserId")
@@ -268,10 +296,6 @@ namespace Sportur.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
@@ -304,6 +328,27 @@ namespace Sportur.Migrations
                         .IsRequired();
 
                     b.Navigation("BicycleModel");
+                });
+
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.HasOne("Category", "ParentCategory")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("Sportur.Models.BicycleModel", b =>
+                {
+                    b.HasOne("Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Sportur.Models.BicycleVariant", b =>
@@ -378,6 +423,11 @@ namespace Sportur.Migrations
                     b.Navigation("BicycleVariant");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("Sportur.Models.BicycleModel", b =>

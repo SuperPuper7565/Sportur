@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Sportur.Models.ViewModels.BicycleCatalogItemViewModel>
+﻿@model IEnumerable<BicycleCatalogItemViewModel>
 
 <h2>Каталог велосипедов</h2>
 
@@ -20,9 +20,7 @@
                         Велосипед @item.Brand @item.ModelName
                     </h5>
 
-                    <p class="card-text">
-                        @item.CategoryName
-                    </p>
+                    <p class="card-text">@item.Category</p>
 
                     <p class="card-text">
                         <strong>от @item.MinPrice ₽</strong>
