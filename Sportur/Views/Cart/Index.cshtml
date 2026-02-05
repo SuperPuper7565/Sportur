@@ -1,5 +1,9 @@
 ﻿@model List<Sportur.Models.Cart.CartItem>
 
+@{
+    var isAuthenticated = Context.Session.GetInt32("UserId") != null;
+}
+
 <h2>Корзина</h2>
 
 @if (!Model.Any())
@@ -69,10 +73,21 @@ else
         Итого: <strong>@Model.Sum(x => x.Price * x.Quantity) ₽</strong>
     </h3>
 
-    <form asp-controller="Order" asp-action="Checkout" method="post">
-        <button type="submit" class="btn btn-success btn-lg">
+    <form asp-controller="Order" asp-action="Checkout" method="post" id="checkoutForm" data-authenticated="@isAuthenticated.ToString().ToLowerInvariant()">
+        <button type="submit"
+                class="btn btn-success btn-lg"
+                id="checkoutBtn"
+                @(isAuthenticated ? null : "disabled")>
             Оформить заказ
         </button>
     </form>
 
+    @if (!isAuthenticated)
+    {
+        <p class="text-danger mt-2 mb-0" id="checkoutAuthWarning">
+            Для оформления заказа нужно
+            <a asp-controller="Account" asp-action="Login">войти</a>
+            в аккаунт.
+        </p>
+    }
 }

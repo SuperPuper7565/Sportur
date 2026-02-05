@@ -1,9 +1,17 @@
-﻿@model BicycleDetailsViewModel
+﻿@using System.Text.Json
+@model BicycleDetailsViewModel
+
+@{
+    var variantsJson = JsonSerializer.Serialize(Model.Variants, new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    });
+}
 
 <h2>@Model.Brand @Model.ModelName</h2>
 <p class="text-muted">@Model.Category</p>
 
-<div class="row mt-3">
+<div class="row mt-3" id="catalogDetails" data-variants="@variantsJson">
 
     <!-- Фото -->
     <div class="col-md-6">

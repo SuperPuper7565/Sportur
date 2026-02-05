@@ -5,11 +5,11 @@ using Sportur.Models;
 namespace Sportur.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class AdminBicycleController : Controller
+    public class AdminBicycleModelController : Controller
     {
         private readonly SporturDbContext _context;
 
-        public AdminBicycleController(SporturDbContext context)
+        public AdminBicycleModelController(SporturDbContext context)
         {
             _context = context;
         }

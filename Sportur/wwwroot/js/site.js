@@ -1,45 +1,56 @@
-﻿let selectedColorId = null;
-let selectedSizeId = null;
+﻿document.addEventListener('DOMContentLoaded', () => {
+    initCatalogDetails();
+    initAdminVariantFiltering();
+    initCheckoutGuard();
+})
 
-const priceSpan = document.getElementById('price');
-const variantInput = document.getElementById('variantId');
-const addBtn = document.getElementById('addToCartBtn');
-const bikeImage = document.getElementById('bikeImage');
+function initCatalogDetails() {
+    const detailsContainer = document.getElementById('catalogDetails');
+    if (!detailsContainer) {
+        return;
+    }
 
-// ---------- ЦВЕТ ----------
-document.querySelectorAll('.color-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
+    const variantsJson = detailsContainer.dataset.variants;
+    if (!variantsJson) {
+        return;
+    }
 
-        selectedColorId = parseInt(this.dataset.colorId);
+    const variants = JSON.parse(variantsJson);
+    let selectedColorId = null;
+    let selectedSizeId = null;
 
-        // активная кнопка
-        document.querySelectorAll('.color-btn')
-            .forEach(b => b.classList.remove('active'));
+    const variants = JSON.parse(variantsJson);
+    let selectedColorId = null;
+    let selectedSizeId = null;
 
-        this.classList.add('active');
+    if (!priceSpan || !variantInput || !addBtn || !sizeSelect) {
+        return;
+    }
 
-        // фото
-        if (bikeImage && this.dataset.photo) {
-            bikeImage.src = this.dataset.photo;
-        }
+    document.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            selectedColorId = parseInt(this.dataset.colorId, 10);
 
-        updateVariant();
+            document.querySelectorAll('.color-btn')
+                .forEach(colorBtn => colorBtn.classList.remove('active'));
+
+            this.classList.add('active');
+
+            if (bikeImage && this.dataset.photo) {
+                bikeImage.src = this.dataset.photo;
+            }
+
+            updateVariant();
+        });
     });
-});
 
-// ---------- РАЗМЕР ----------
-const sizeSelect = document.getElementById('sizeSelect');
-
-if (sizeSelect) {
     sizeSelect.addEventListener('change', function () {
-        selectedSizeId = parseInt(this.value) || null;
+        selectedSizeId = parseInt(this.value, 10) || null;
         updateVariant();
     });
 }
 
-// ---------- ПОИСК ВАРИАНТА ----------
 function updateVariant() {
-
     if (!selectedColorId || !selectedSizeId) {
         resetUI();
         return;
@@ -52,20 +63,130 @@ function updateVariant() {
     );
 
     if (!variant || variant.stockQuantity <= 0) {
-        resetUI("Нет в наличии");
+        resetUI('Нет в наличии');
         return;
     }
 
-    // ✔ найден вариант
     priceSpan.innerText = variant.price;
     variantInput.value = variant.id;
-
     addBtn.disabled = false;
 }
 
-// ---------- СБРОС ----------
-function resetUI(text = "—") {
+function resetUI(text = '—') {
     priceSpan.innerText = text;
-    variantInput.value = "";
+    variantInput.value = '';
     addBtn.disabled = true;
 }
+
+function initAdminVariantFiltering() {
+    const form = document.querySelector('[data-variant-form="true"]');
+    if (!form) {
+        return;
+    }
+
+    const modelSelect = form.querySelector('[data-variant-model="true"]');
+    const colorSelect = form.querySelector('[data-variant-color="true"]');
+    const sizeSelect = form.querySelector('[data-variant-size="true"]');
+
+    if (!modelSelect || !colorSelect || !sizeSelect) {
+        return;
+    }
+
+    const filterSelect = (select, modelId) => {
+        const options = Array.from(select.querySelectorAll('option[data-model-id]'));
+        let hasVisibleSelected = false;
+
+        options.forEach(option => {
+            const matches = modelId && option.dataset.modelId === modelId;
+            option.hidden = !matches;
+
+            if (!matches && option.selected) {
+                option.selected = false;
+            }
+
+            if (matches && option.selected) {
+                hasVisibleSelected = true;
+            }
+        });
+
+        if (!hasVisibleSelected) {
+            const firstVisible = options.find(option => !option.hidden);
+            if (firstVisible) {
+                firstVisible.selected = true;
+            }
+        }
+    };
+
+    const applyFilters = () => {
+        const modelId = modelSelect.value;
+        filterSelect(colorSelect, modelId);
+        filterSelect(sizeSelect, modelId);
+    };
+
+    modelSelect.addEventListener('change', applyFilters);
+    applyFilters();
+}
+
+function initCheckoutGuard() {
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (!checkoutForm) {
+        return;
+    }
+
+    const isAuthenticated = checkoutForm.dataset.authenticated === 'true';
+    if (isAuthenticated) {
+        return;
+    }
+
+    checkoutForm.addEventListener('submit', event => {
+        event.preventDefault();
+    });
+}
+
+// ---------- ADMIN VARIANT FILTERING ----------
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('[data-variant-form="true"]');
+    if (!form) {
+        return;
+    }
+
+    const modelSelect = form.querySelector('[data-variant-model="true"]');
+    const colorSelect = form.querySelector('[data-variant-color="true"]');
+    const sizeSelect = form.querySelector('[data-variant-size="true"]');
+
+    if (!modelSelect || !colorSelect || !sizeSelect) {
+        return;
+    }
+
+    const filterSelect = (select, modelId) => {
+        const options = Array.from(select.querySelectorAll('option[data-model-id]'));
+        let hasVisibleSelected = false;
+
+        options.forEach(option => {
+            const matches = modelId && option.dataset.modelId === modelId;
+            option.hidden = !matches;
+            if (!matches && option.selected) {
+                option.selected = false;
+            }
+            if (matches && option.selected) {
+                hasVisibleSelected = true;
+            }
+        });
+
+        if (!hasVisibleSelected) {
+            const firstVisible = options.find(option => !option.hidden);
+            if (firstVisible) {
+                firstVisible.selected = true;
+            }
+        }
+    };
+
+    const applyFilters = () => {
+        const modelId = modelSelect.value;
+        filterSelect(colorSelect, modelId);
+        filterSelect(sizeSelect, modelId);
+    };
+
+    modelSelect.addEventListener('change', applyFilters);
+    applyFilters();
+});

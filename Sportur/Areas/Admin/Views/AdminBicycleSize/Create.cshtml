@@ -1,0 +1,28 @@
+﻿@model Sportur.ViewModels.AdminBicycleSizeFormViewModel
+
+<h2>Добавить размер</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="BicycleModelId" class="form-label"></label>
+        <select asp-for="BicycleModelId" class="form-select">
+            <option value="">-- выберите модель --</option>
+            @foreach (var option in Model.Models)
+            {
+                <option value="@option.Id" selected="@(option.Id == Model.BicycleModelId ? "selected" : null)">
+                    @option.Label
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FrameSize" class="form-label"></label>
+        <input asp-for="FrameSize" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Создать</button>
+    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+</form>

@@ -7,32 +7,6 @@
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
-
-    <style>
-        .admin-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .admin-sidebar {
-            width: 220px;
-            background: #222;
-            color: #fff;
-            padding: 20px;
-        }
-
-        .admin-sidebar a {
-            display: block;
-            color: #fff;
-            margin-bottom: 10px;
-            text-decoration: none;
-        }
-
-        .admin-content {
-            flex: 1;
-            padding: 20px;
-        }
-    </style>
 </head>
 <body>
 
@@ -44,8 +18,20 @@
                 📦 Заказы
             </a>
 
-            <a asp-area="Admin" asp-controller="AdminBicycle" asp-action="Index">
-                🚲 Велосипеды
+            <a asp-area="Admin" asp-controller="AdminBicycleModel" asp-action="Index">
+                🚲 Модели велосипедов
+            </a>
+
+            <a asp-area="Admin" asp-controller="AdminBicycleColor" asp-action="Index">
+                🎨 Цвета велосипедов
+            </a>
+
+            <a asp-area="Admin" asp-controller="AdminBicycleSize" asp-action="Index">
+                📏 Ростовки велосипедов
+            </a>
+
+            <a asp-area="Admin" asp-controller="AdminBicycleVariant" asp-action="Index">
+                🎨 Варианты велосипедов
             </a>
 
             <hr />

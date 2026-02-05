@@ -39,3 +39,27 @@ header {
 .auth a {
     margin-left: 10px;
 }
+
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 220px;
+    background: #222;
+    color: #fff;
+    padding: 20px;
+}
+
+.admin-sidebar a {
+    display: block;
+    color: #fff;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 20px;
+}

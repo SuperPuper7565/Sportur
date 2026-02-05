@@ -1,0 +1,68 @@
+﻿@model Sportur.ViewModels.AdminBicycleVariantFormViewModel
+
+<h2>Добавить вариант</h2>
+
+<form asp-action="Create" method="post" data-variant-form="true">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="BicycleModelId" class="form-label"></label>
+        <select asp-for="BicycleModelId" class="form-select" id="modelSelect" data-variant-model="true">
+            <option value="">-- выберите модель --</option>
+            @foreach (var option in Model.Models)
+            {
+                <option value="@option.Id" selected="@(option.Id == Model.BicycleModelId ? "selected" : null)">
+                    @option.Label
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BicycleColorId" class="form-label"></label>
+        <select asp-for="BicycleColorId" class="form-select" id="colorSelect" data-variant-color="true">
+            <option value="">-- выберите цвет --</option>
+            @foreach (var option in Model.Colors)
+            {
+                <option value="@option.Id"
+                        data-model-id="@option.BicycleModelId"
+                        selected="@(option.Id == Model.BicycleColorId ? "selected" : null)">
+                    @option.Label
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BicycleSizeId" class="form-label"></label>
+        <select asp-for="BicycleSizeId" class="form-select" id="sizeSelect" data-variant-size="true">
+            <option value="">-- выберите размер --</option>
+            @foreach (var option in Model.Sizes)
+            {
+                <option value="@option.Id"
+                        data-model-id="@option.BicycleModelId"
+                        selected="@(option.Id == Model.BicycleSizeId ? "selected" : null)">
+                    @option.Label
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" type="number" step="0.01" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StockQuantity" class="form-label"></label>
+        <input asp-for="StockQuantity" type="number" class="form-control" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsAvailable" class="form-check-input" />
+        <label asp-for="IsAvailable" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-success">Создать</button>
+    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+</form>
