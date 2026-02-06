@@ -2,7 +2,9 @@
 
 <h2>Добавить цвет</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+
     <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="mb-3">
@@ -24,10 +26,21 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="PhotoUrl" class="form-label"></label>
-        <input asp-for="PhotoUrl" class="form-control" />
+        <label asp-for="PhotoFile" class="form-label">Фото (файл)</label>
+        <input asp-for="PhotoFile" type="file" class="form-control" />
     </div>
 
-    <button type="submit" class="btn btn-success">Создать</button>
+    @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+    {
+        <div class="mb-3">
+            <label>Текущее фото:</label><br />
+            <img src="@Model.PhotoUrl" alt="Фото цвета" style="max-width:200px;" />
+        </div>
+    }
+
+    <button type="submit" class="btn @(ViewContext.RouteData.Values["action"].ToString() == "Edit" ? "btn-warning" : "btn-success")">
+        @(ViewContext.RouteData.Values["action"].ToString() == "Edit" ? "Сохранить" : "Создать")
+    </button>
     <a asp-action="Index" class="btn btn-secondary">Отмена</a>
 </form>
+

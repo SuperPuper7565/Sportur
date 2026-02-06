@@ -6,6 +6,14 @@
 
 <h2>Корзина</h2>
 
+@if (TempData["CheckoutAuthMessage"] is string checkoutAuthMessage)
+{
+    <div class="alert alert-warning" role="alert">
+        @checkoutAuthMessage
+        <a asp-controller="Account" asp-action="Login" class="alert-link">Войти в аккаунт</a>
+    </div>
+}
+
 @if (!Model.Any())
 {
     <p>Корзина пуста</p>

@@ -63,3 +63,8 @@ header {
     flex: 1;
     padding: 20px;
 }
+/* Подсветка предупреждения об авторизации при попытке оформить заказ без входа. */
+.checkout-auth-warning-attention {
+    color: #b02a37;
+    font-weight: 600;
+}

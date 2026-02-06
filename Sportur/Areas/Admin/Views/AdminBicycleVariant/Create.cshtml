@@ -7,7 +7,10 @@
 
     <div class="mb-3">
         <label asp-for="BicycleModelId" class="form-label"></label>
-        <select asp-for="BicycleModelId" class="form-select" id="modelSelect" data-variant-model="true">
+        <select asp-for="BicycleModelId"
+                class="form-select"
+                data-variant-model="true"
+                data-options-endpoint="@Url.Action("GetModelOptions", "AdminBicycleVariant", new { area = "Admin" })">
             <option value="">-- выберите модель --</option>
             @foreach (var option in Model.Models)
             {
@@ -20,31 +23,17 @@
 
     <div class="mb-3">
         <label asp-for="BicycleColorId" class="form-label"></label>
-        <select asp-for="BicycleColorId" class="form-select" id="colorSelect" data-variant-color="true">
-            <option value="">-- выберите цвет --</option>
-            @foreach (var option in Model.Colors)
-            {
-                <option value="@option.Id"
-                        data-model-id="@option.BicycleModelId"
-                        selected="@(option.Id == Model.BicycleColorId ? "selected" : null)">
-                    @option.Label
-                </option>
-            }
+        <select asp-for="BicycleColorId"
+                class="form-select"
+                data-variant-color="true">
         </select>
     </div>
 
     <div class="mb-3">
         <label asp-for="BicycleSizeId" class="form-label"></label>
-        <select asp-for="BicycleSizeId" class="form-select" id="sizeSelect" data-variant-size="true">
-            <option value="">-- выберите размер --</option>
-            @foreach (var option in Model.Sizes)
-            {
-                <option value="@option.Id"
-                        data-model-id="@option.BicycleModelId"
-                        selected="@(option.Id == Model.BicycleSizeId ? "selected" : null)">
-                    @option.Label
-                </option>
-            }
+        <select asp-for="BicycleSizeId"
+                class="form-select"
+                data-variant-size="true">
         </select>
     </div>
 

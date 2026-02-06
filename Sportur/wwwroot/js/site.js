@@ -1,41 +1,88 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
+    // Инициализируем логику страницы детального просмотра товара.
     initCatalogDetails();
+
+    // Инициализируем фильтрацию цветов/ростовок в админ-форме варианта.
     initAdminVariantFiltering();
+
+    // Инициализируем защиту оформления заказа для неавторизованных пользователей.
     initCheckoutGuard();
-})
+});
 
 function initCatalogDetails() {
+    // Скрипт работает только на странице товара, где есть контейнер с данными вариантов.
     const detailsContainer = document.getElementById('catalogDetails');
     if (!detailsContainer) {
         return;
     }
 
+    // Варианты приходят с сервера в формате JSON через data-атрибут.
     const variantsJson = detailsContainer.dataset.variants;
     if (!variantsJson) {
         return;
     }
 
     const variants = JSON.parse(variantsJson);
-    let selectedColorId = null;
-    let selectedSizeId = null;
 
-    const variants = JSON.parse(variantsJson);
-    let selectedColorId = null;
-    let selectedSizeId = null;
+    const priceSpan = document.getElementById('price');
+    const stockSpan = document.getElementById('stock');
+    const variantInput = document.getElementById('variantId');
+    const addBtn = document.getElementById('addToCartBtn');
+    const sizeSelect = document.getElementById('sizeSelect');
+    const bikeImage = document.getElementById('bikeImage');
 
-    if (!priceSpan || !variantInput || !addBtn || !sizeSelect) {
+    // Если обязательные элементы отсутствуют, выходим без ошибок.
+    if (!priceSpan || !stockSpan || !variantInput || !addBtn || !sizeSelect) {
         return;
     }
+
+    let selectedColorId = null;
+    let selectedSizeId = null;
+
+    const resetUI = (text = '—', stockText = '') => {
+        priceSpan.innerText = text;
+        stockSpan.innerText = stockText;
+        variantInput.value = '';
+        addBtn.disabled = true;
+    };
+
+    const updateVariant = () => {
+        // Пока не выбран цвет и размер, не позволяем добавлять в корзину.
+        if (!selectedColorId || !selectedSizeId) {
+            resetUI();
+            return;
+        }
+
+        // Ищем только подходящий и доступный вариант.
+        const variant = variants.find(v =>
+            v.colorId === selectedColorId &&
+            v.sizeId === selectedSizeId &&
+            v.isAvailable
+        );
+
+        if (!variant || variant.stockQuantity <= 0) {
+            resetUI('Нет в наличии', 'Остаток: 0');
+            return;
+        }
+
+        // Обновляем UI и скрытое поле, которое отправляется в корзину.
+        priceSpan.innerText = variant.price;
+        stockSpan.innerText = `Остаток: ${variant.stockQuantity}`;
+        variantInput.value = variant.id;
+        addBtn.disabled = false;
+    };
 
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             selectedColorId = parseInt(this.dataset.colorId, 10);
 
+            // Визуально выделяем выбранный цвет.
             document.querySelectorAll('.color-btn')
                 .forEach(colorBtn => colorBtn.classList.remove('active'));
 
             this.classList.add('active');
 
+            // При наличии фото цвета сразу обновляем картинку велосипеда.
             if (bikeImage && this.dataset.photo) {
                 bikeImage.src = this.dataset.photo;
             }
@@ -48,145 +95,112 @@ function initCatalogDetails() {
         selectedSizeId = parseInt(this.value, 10) || null;
         updateVariant();
     });
-}
 
-function updateVariant() {
-    if (!selectedColorId || !selectedSizeId) {
-        resetUI();
-        return;
-    }
-
-    const variant = variants.find(v =>
-        v.colorId === selectedColorId &&
-        v.sizeId === selectedSizeId &&
-        v.isAvailable
-    );
-
-    if (!variant || variant.stockQuantity <= 0) {
-        resetUI('Нет в наличии');
-        return;
-    }
-
-    priceSpan.innerText = variant.price;
-    variantInput.value = variant.id;
-    addBtn.disabled = false;
-}
-
-function resetUI(text = '—') {
-    priceSpan.innerText = text;
-    variantInput.value = '';
-    addBtn.disabled = true;
+    // Начальное состояние страницы до выбора параметров.
+    resetUI();
 }
 
 function initAdminVariantFiltering() {
     const form = document.querySelector('[data-variant-form="true"]');
-    if (!form) {
-        return;
-    }
+    if (!form) return;
 
     const modelSelect = form.querySelector('[data-variant-model="true"]');
     const colorSelect = form.querySelector('[data-variant-color="true"]');
     const sizeSelect = form.querySelector('[data-variant-size="true"]');
 
-    if (!modelSelect || !colorSelect || !sizeSelect) {
-        return;
-    }
+    if (!modelSelect || !colorSelect || !sizeSelect) return;
 
-    const filterSelect = (select, modelId) => {
-        const options = Array.from(select.querySelectorAll('option[data-model-id]'));
-        let hasVisibleSelected = false;
+    const endpoint = modelSelect.dataset.optionsEndpoint;
 
-        options.forEach(option => {
-            const matches = modelId && option.dataset.modelId === modelId;
-            option.hidden = !matches;
+    const clearSelect = (select, placeholder) => {
+        select.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = placeholder;
+        select.appendChild(opt);
+        select.value = '';
+        select.disabled = true;
+    };
 
-            if (!matches && option.selected) {
-                option.selected = false;
-            }
+    const fillSelect = (select, placeholder, items) => {
+        select.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = placeholder;
+        select.appendChild(opt);
 
-            if (matches && option.selected) {
-                hasVisibleSelected = true;
-            }
+        items.forEach(x => {
+            const o = document.createElement('option');
+            o.value = x.id;
+            o.textContent = x.label;
+            select.appendChild(o);
         });
 
-        if (!hasVisibleSelected) {
-            const firstVisible = options.find(option => !option.hidden);
-            if (firstVisible) {
-                firstVisible.selected = true;
-            }
+        select.disabled = items.length === 0;
+    };
+
+    clearSelect(colorSelect, '-- выберите цвет --');
+    clearSelect(sizeSelect, '-- выберите размер --');
+
+    modelSelect.addEventListener('change', async () => {
+        const modelId = parseInt(modelSelect.value, 10);
+
+        clearSelect(colorSelect, '-- выберите цвет --');
+        clearSelect(sizeSelect, '-- выберите размер --');
+
+        if (!Number.isInteger(modelId) || modelId <= 0) {
+            return;
         }
-    };
 
-    const applyFilters = () => {
-        const modelId = modelSelect.value;
-        filterSelect(colorSelect, modelId);
-        filterSelect(sizeSelect, modelId);
-    };
+        const res = await fetch(`${endpoint}?modelId=${modelId}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
 
-    modelSelect.addEventListener('change', applyFilters);
-    applyFilters();
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        fillSelect(colorSelect, '-- выберите цвет --', data.colors || []);
+        fillSelect(sizeSelect, '-- выберите размер --', data.sizes || []);
+    });
+
+}
+
+
+
+    modelSelect.addEventListener('change', () => {
+        loadModelOptions(modelSelect.value);
+    });
+
+    if (modelSelect.value) {
+        loadModelOptions(modelSelect.value);
+    } else {
+        resetDependentSelects();
+    }
 }
 
 function initCheckoutGuard() {
+    // Скрипт нужен только на странице корзины.
     const checkoutForm = document.getElementById('checkoutForm');
     if (!checkoutForm) {
         return;
     }
 
+    // Признак авторизации приходит с сервера через data-атрибут.
     const isAuthenticated = checkoutForm.dataset.authenticated === 'true';
     if (isAuthenticated) {
         return;
     }
 
+    const warning = document.getElementById('checkoutAuthWarning');
+
+    // Даже если кнопку активируют вручную через DevTools, отправку всё равно блокируем.
     checkoutForm.addEventListener('submit', event => {
         event.preventDefault();
+
+        // Подсветим предупреждение, чтобы пользователь явно увидел причину блокировки.
+        if (warning) {
+            warning.classList.add('checkout-auth-warning-attention');
+        }
     });
 }
-
-// ---------- ADMIN VARIANT FILTERING ----------
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('[data-variant-form="true"]');
-    if (!form) {
-        return;
-    }
-
-    const modelSelect = form.querySelector('[data-variant-model="true"]');
-    const colorSelect = form.querySelector('[data-variant-color="true"]');
-    const sizeSelect = form.querySelector('[data-variant-size="true"]');
-
-    if (!modelSelect || !colorSelect || !sizeSelect) {
-        return;
-    }
-
-    const filterSelect = (select, modelId) => {
-        const options = Array.from(select.querySelectorAll('option[data-model-id]'));
-        let hasVisibleSelected = false;
-
-        options.forEach(option => {
-            const matches = modelId && option.dataset.modelId === modelId;
-            option.hidden = !matches;
-            if (!matches && option.selected) {
-                option.selected = false;
-            }
-            if (matches && option.selected) {
-                hasVisibleSelected = true;
-            }
-        });
-
-        if (!hasVisibleSelected) {
-            const firstVisible = options.find(option => !option.hidden);
-            if (firstVisible) {
-                firstVisible.selected = true;
-            }
-        }
-    };
-
-    const applyFilters = () => {
-        const modelId = modelSelect.value;
-        filterSelect(colorSelect, modelId);
-        filterSelect(sizeSelect, modelId);
-    };
-
-    modelSelect.addEventListener('change', applyFilters);
-    applyFilters();
-});

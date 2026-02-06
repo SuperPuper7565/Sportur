@@ -20,19 +20,26 @@ namespace Sportur.Controllers
         [HttpPost]
         public IActionResult Checkout()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                TempData["CheckoutAuthMessage"] = "Для оформления заказа необходимо авторизоваться.";
+                return RedirectToAction("Index", "Cart");
+            }
+
             var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey);
 
             if (cart == null || !cart.Any())
                 return RedirectToAction("Index", "Cart");
 
-            // 1️⃣ Получаем все варианты из БД
+            // 1️ Получаем все варианты из БД
             var variantIds = cart.Select(c => c.VariantId).ToList();
 
             var variants = _context.BicycleVariants
                 .Where(v => variantIds.Contains(v.Id))
                 .ToList();
 
-            // 2️⃣ ВАЛИДАЦИЯ остатков
+            // 2️ ВАЛИДАЦИЯ остатков
             foreach (var item in cart)
             {
                 var variant = variants.First(v => v.Id == item.VariantId);
@@ -44,9 +51,7 @@ namespace Sportur.Controllers
                 }
             }
 
-            var userId = HttpContext.Session.GetInt32("UserId");
-
-            // 3️⃣ Создаём заказ
+            // 3️ Создаём заказ
             var order = new Order
             {
                 UserId = userId,

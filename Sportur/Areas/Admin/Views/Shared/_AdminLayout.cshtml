@@ -4,9 +4,7 @@
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - Админка</title>
 
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
 
@@ -14,33 +12,33 @@
         <aside class="admin-sidebar">
             <h3>Админка</h3>
 
-            <a asp-area="Admin" asp-controller="AdminOrder" asp-action="Index">
+            <a asp-controller="AdminOrder" asp-action="Index">
                 📦 Заказы
             </a>
 
-            <a asp-area="Admin" asp-controller="AdminBicycleModel" asp-action="Index">
+            <a asp-controller="AdminBicycleModel" asp-action="Index">
                 🚲 Модели велосипедов
             </a>
 
-            <a asp-area="Admin" asp-controller="AdminBicycleColor" asp-action="Index">
+            <a asp-controller="AdminBicycleColor" asp-action="Index">
                 🎨 Цвета велосипедов
             </a>
 
-            <a asp-area="Admin" asp-controller="AdminBicycleSize" asp-action="Index">
+            <a asp-controller="AdminBicycleSize" asp-action="Index">
                 📏 Ростовки велосипедов
             </a>
 
-            <a asp-area="Admin" asp-controller="AdminBicycleVariant" asp-action="Index">
+            <a asp-controller="AdminBicycleVariant" asp-action="Index">
                 🎨 Варианты велосипедов
             </a>
 
             <hr />
 
-            <a asp-controller="Catalog" asp-action="Index">
+            <a asp-area="" asp-controller="Catalog" asp-action="Index">
                 ← На сайт
             </a>
 
-            <a asp-controller="Account" asp-action="Logout">
+            <a asp-area="" asp-controller="Account" asp-action="Logout">
                 Выйти
             </a>
         </aside>
@@ -49,6 +47,8 @@
             @RenderBody()
         </main>
     </div>
+
+    <script src="~/js/admin.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

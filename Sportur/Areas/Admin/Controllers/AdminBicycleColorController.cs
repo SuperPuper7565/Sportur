@@ -42,9 +42,27 @@ namespace Sportur.Areas.Admin.Controllers
             var color = new BicycleColor
             {
                 BicycleModelId = model.BicycleModelId,
-                Color = model.Color,
-                PhotoUrl = model.PhotoUrl
+                Color = model.Color
             };
+
+            // Загружаем файл, если выбран
+            if (model.PhotoFile != null && model.PhotoFile.Length > 0)
+            {
+                var fileName = Path.GetFileName(model.PhotoFile.FileName);
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "bicycles");
+
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
+
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.PhotoFile.CopyTo(stream);
+                }
+
+                color.PhotoUrl = $"/images/bicycles/{fileName}";
+            }
 
             _context.BicycleColors.Add(color);
             _context.SaveChanges();
@@ -81,7 +99,25 @@ namespace Sportur.Areas.Admin.Controllers
 
             color.BicycleModelId = model.BicycleModelId;
             color.Color = model.Color;
-            color.PhotoUrl = model.PhotoUrl;
+
+            // Загружаем новый файл, если выбран
+            if (model.PhotoFile != null && model.PhotoFile.Length > 0)
+            {
+                var fileName = Path.GetFileName(model.PhotoFile.FileName);
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "bicycles");
+
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
+
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.PhotoFile.CopyTo(stream);
+                }
+
+                color.PhotoUrl = $"/images/bicycles/{fileName}";
+            }
 
             _context.BicycleColors.Update(color);
             _context.SaveChanges();
