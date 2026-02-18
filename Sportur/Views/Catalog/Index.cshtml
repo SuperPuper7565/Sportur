@@ -1,42 +1,44 @@
 ﻿@model IEnumerable<BicycleCatalogItemViewModel>
 
-<h2>Каталог велосипедов</h2>
+@section Styles {
+    <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
+}
 
-<div class="row">
+<h2 class="mb-4">Каталог велосипедов</h2>
+
+<div class="catalog-grid">
     @foreach (var item in Model)
     {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
+        <a asp-action="Details"
+           asp-route-id="@item.Id"
+           class="catalog-link">
+
+            <div class="card catalog-card">
 
                 @if (!string.IsNullOrEmpty(item.PreviewImageUrl))
                 {
                     <img src="@item.PreviewImageUrl"
-                         class="card-img-top"
+                         class="catalog-image"
                          alt="@item.ModelName" />
                 }
 
                 <div class="card-body">
-                    <h5 class="card-title">
-                        Велосипед @item.Brand @item.ModelName
+                    <h5 class="catalog-title">
+                        @item.Brand @item.ModelName
                     </h5>
 
-                    <p class="card-text">@item.Category</p>
+                    <p class="catalog-category">@item.Category</p>
 
-                    <p class="card-text">
-                        <strong>от @item.MinPrice ₽</strong>
+                    <p class="catalog-price">
+                        от @item.MinPrice ₽
                     </p>
 
-                    <p class="card-text text-muted">
+                    <p class="catalog-colors text-muted">
                         Цветов: @item.ColorsCount
                     </p>
-
-                    <a asp-action="Details"
-                       asp-route-id="@item.Id"
-                       class="btn btn-primary">
-                        Подробнее
-                    </a>
                 </div>
             </div>
-        </div>
+        </a>
     }
 </div>
+

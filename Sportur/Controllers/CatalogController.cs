@@ -20,16 +20,31 @@ namespace Sportur.Controllers
         // =========================
         public IActionResult Index(BicycleCategory? category)
         {
-            var models = _context.BicycleModels
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var role = HttpContext.Session.GetString("UserRole");
+
+            var wholesalePrices = new Dictionary<int, decimal>();
+
+            if (userId.HasValue && role == UserRole.Wholesale.ToString())
+            {
+                wholesalePrices = _context.WholesalePrices
+                    .Where(w => w.UserId == userId.Value)
+                    .GroupBy(w => w.BicycleVariantId)
+                    .ToDictionary(g => g.Key, g => g.First().Price);
+            }
+
+            var modelsFromDb = _context.BicycleModels
                 .Include(m => m.Variants)
                     .ThenInclude(v => v.BicycleColor)
                 .Where(m => category == null || m.Category == category)
+                .AsEnumerable();
+
+            var models = modelsFromDb
                 .Select(m => new BicycleCatalogItemViewModel
                 {
                     Id = m.Id,
                     Brand = m.Brand,
                     ModelName = m.ModelName,
-
                     Category = m.Category,
 
                     PreviewImageUrl = m.Variants
@@ -37,7 +52,10 @@ namespace Sportur.Controllers
                         .FirstOrDefault(),
 
                     MinPrice = m.Variants.Any()
-                        ? m.Variants.Min(v => v.Price)
+                        ? m.Variants.Min(v =>
+                            wholesalePrices.TryGetValue(v.Id, out var price)
+                                ? price
+                                : v.Price)
                         : 0,
 
                     ColorsCount = m.Variants
@@ -50,11 +68,25 @@ namespace Sportur.Controllers
             return View(models);
         }
 
+
         // =========================
         // Детали модели
         // =========================
         public IActionResult Details(int id)
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var role = HttpContext.Session.GetString("UserRole");
+
+            var wholesalePrices = new Dictionary<int, decimal>();
+
+            if (userId.HasValue && role == UserRole.Wholesale.ToString())
+            {
+                wholesalePrices = _context.WholesalePrices
+                    .Where(w => w.UserId == userId.Value)
+                    .GroupBy(w => w.BicycleVariantId)
+                    .ToDictionary(g => g.Key, g => g.First().Price);
+            }
+
             var model = _context.BicycleModels
                 .Include(m => m.Variants)
                     .ThenInclude(v => v.BicycleColor)
@@ -94,19 +126,23 @@ namespace Sportur.Controllers
                     })
                     .ToList(),
 
-                Variants = model.Variants.Select(v => new BicycleVariantViewModel
-                {
-                    Id = v.Id,
-                    ColorId = v.BicycleColorId,
-                    SizeId = v.BicycleSizeId,
-                    Price = v.Price,
-                    StockQuantity = v.StockQuantity,
-                    IsAvailable = v.IsAvailable
-                })
-                .ToList()
+                Variants = model.Variants
+                    .Select(v => new BicycleVariantViewModel
+                    {
+                        Id = v.Id,
+                        ColorId = v.BicycleColorId,
+                        SizeId = v.BicycleSizeId,
+                        Price = wholesalePrices.TryGetValue(v.Id, out var price)
+                            ? price
+                            : v.Price,
+                        StockQuantity = v.StockQuantity,
+                        IsAvailable = v.IsAvailable
+                    })
+                    .ToList()
             };
 
             return View(vm);
         }
+
     }
 }

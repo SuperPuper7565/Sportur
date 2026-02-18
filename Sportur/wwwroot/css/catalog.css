@@ -1,2 +1,80 @@
-﻿body {
+﻿/* Карточки каталога */
+.catalog-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .catalog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    }
+
+/* Изображения одинакового размера */
+.catalog-image {
+    height: 220px;
+    width: 100%;
+    object-fit: contain; 
+    background-color: #f8f9fa; 
+    padding: 10px; 
+}
+
+
+/* Заголовок */
+.catalog-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Цена */
+.catalog-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+/* Категория */
+.catalog-category {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Текст с цветами */
+.catalog-colors {
+    font-size: 0.9rem;
+}
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.catalog-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.catalog-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.catalog-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.catalog-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.catalog-card:active {
+    transform: scale(0.98);
 }

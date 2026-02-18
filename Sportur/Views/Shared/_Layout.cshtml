@@ -25,30 +25,22 @@
         </nav>
 
         <div class="auth">
-            @{
-                var userId = Context.Session.GetInt32("UserId");
-                var userName = Context.Session.GetString("UserName");
-                var role = Context.Session.GetString("UserRole");
-            }
-
-            @if (userId == null)
+            @if (Context.Session.GetInt32("UserId") == null)
             {
                 <a asp-controller="Account" asp-action="Login">Войти</a>
                 <a asp-controller="Account" asp-action="Register">Регистрация</a>
             }
             else
             {
-                <span>Привет, @userName</span>
+                <span>Привет, @Context.Session.GetString("UserName")</span>
 
                 <a asp-controller="Order" asp-action="My">Мои заказы</a>
 
-                @if (role == "Admin")
+                @if (Context.Session.GetString("UserRole") == "Admin")
                 {
                     <a asp-area="Admin"
                        asp-controller="AdminOrder"
-                       asp-action="Index">
-                        Админка
-                    </a>
+                       asp-action="Index">Админка</a>
                 }
 
                 <a asp-controller="Account" asp-action="Logout">Выйти</a>

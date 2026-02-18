@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
 
-namespace Sportur.Controllers
+namespace Sportur.Areas.Admin.Controllers
 {
-    public class UsersController : Controller
+    [Area("Admin")]
+    public class AdminUsersController : Controller
     {
         private readonly SporturDbContext _context;
 
-        public UsersController(SporturDbContext context)
+        public AdminUsersController(SporturDbContext context)
         {
             _context = context;
         }

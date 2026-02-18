@@ -1,0 +1,42 @@
+﻿@model Sportur.Models.WholesalePrice
+
+<h2>Назначить персональную цену</h2>
+
+<form asp-action="Create" method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div>
+        <label>Покупатель</label>
+        <select asp-for="UserId">
+            @foreach (var user in ViewBag.Users)
+            {
+                <option value="@user.Id">@user.Email</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Вариант велосипеда</label>
+        <select asp-for="BicycleVariantId">
+            @foreach (var variant in ViewBag.Variants)
+            {
+                <option value="@variant.Id">
+                    @variant.BicycleModel.Brand @variant.BicycleModel.ModelName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Цена</label>
+        <input asp-for="Price" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <button type="submit">Сохранить</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

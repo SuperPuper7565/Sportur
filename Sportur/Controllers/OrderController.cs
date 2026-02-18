@@ -65,7 +65,7 @@ namespace Sportur.Controllers
                 order.Items.Add(new OrderItem
                 {
                     BicycleVariantId = variant.Id,
-                    Price = variant.Price,
+                    Price = item.Price,
                     Quantity = item.Quantity
                 });
 

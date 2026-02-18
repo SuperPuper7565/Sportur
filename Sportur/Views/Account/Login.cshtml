@@ -1,5 +1,17 @@
 ﻿<h2>Вход</h2>
 
+@if (TempData["WholesalePendingMessage"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["WholesalePendingMessage"]
+    </div>
+}
+
+@if (ViewData.ModelState.ErrorCount > 0)
+{
+    <div class="text-danger">@Html.ValidationSummary()</div>
+}
+
 <form asp-action="Login" method="post">
     <div class="mb-3">
         <label>Email</label>

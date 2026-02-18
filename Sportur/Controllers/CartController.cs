@@ -19,6 +19,9 @@ namespace Sportur.Controllers
         [HttpPost]
         public IActionResult Add(int variantId)
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var role = HttpContext.Session.GetString("UserRole");
+
             var variant = _context.BicycleVariants
                 .Include(v => v.BicycleModel)
                 .Include(v => v.BicycleColor)
@@ -35,6 +38,19 @@ namespace Sportur.Controllers
                        ?? new List<CartItem>();
 
             var item = cart.FirstOrDefault(x => x.VariantId == variantId);
+
+            var price = variant.Price;
+            if (userId.HasValue && role == UserRole.Wholesale.ToString())
+            {
+                price = _context.WholesalePrices
+                    .Where(w => w.UserId == userId.Value && w.BicycleVariantId == variant.Id)
+                    .Select(w => w.Price)
+                    .FirstOrDefault() switch
+                {
+                    0 => variant.Price,
+                    var wholesalePrice => wholesalePrice
+                };
+            }
 
             if (item != null)
             {
@@ -53,7 +69,7 @@ namespace Sportur.Controllers
                     Color = variant.BicycleColor.Color,
                     FrameSize = variant.BicycleSize.FrameSize,
 
-                    Price = variant.Price,
+                    Price = price,
                     Quantity = 1,
                     StockQuantity = variant.StockQuantity,
                     PhotoUrl = variant.BicycleColor.PhotoUrl

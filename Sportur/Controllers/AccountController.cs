@@ -14,7 +14,7 @@ public class AccountController : Controller
     public IActionResult Register() => View();
 
     [HttpPost]
-    public IActionResult Register(string name, string surname, string email, string password)
+    public IActionResult Register(string name, string surname, string email, string password, bool requestWholesale)
     {
         if (_context.Users.Any(u => u.Email == email))
         {
@@ -31,11 +31,18 @@ public class AccountController : Controller
             Email = email,
             PasswordHash = hash,
             PasswordSalt = salt,
-            Role = UserRole.Retail // по умолчанию
+            Role = requestWholesale ? UserRole.Wholesale : UserRole.Retail,
+            IsWholesaleApproved = !requestWholesale
         };
 
         _context.Users.Add(user);
         _context.SaveChanges();
+
+        if (requestWholesale)
+        {
+            TempData["WholesalePendingMessage"] = "Заявка на оптовый доступ отправлена. Дождитесь подтверждения администратора.";
+            return RedirectToAction("Login");
+        }
 
         // логиним
         HttpContext.Session.SetInt32("UserId", user.Id);
@@ -56,6 +63,12 @@ public class AccountController : Controller
             !VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
         {
             ModelState.AddModelError("", "Неверный email или пароль");
+            return View();
+        }
+
+        if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+        {
+            ModelState.AddModelError("", "Ваш аккаунт оптового покупателя находится на модерации.");
             return View();
         }
 

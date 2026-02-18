@@ -28,4 +28,6 @@ public class User
     public byte[] PasswordSalt { get; set; }
     [Required]
     public UserRole Role { get; set; }
+
+    public bool IsWholesaleApproved { get; set; }
 }

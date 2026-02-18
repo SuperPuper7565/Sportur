@@ -1,19 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Sportur.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sportur.Models
 {
     public class WholesalePrice
     {
-        [Key]
         public int Id { get; set; }
 
         [Required]
         public int BicycleVariantId { get; set; }
+
+        [ValidateNever]
         public BicycleVariant BicycleVariant { get; set; }
 
         [Required]
         public int UserId { get; set; }
+
+        [ValidateNever]
         public User User { get; set; }
 
         [Required]
@@ -21,3 +26,4 @@ namespace Sportur.Models
         public decimal Price { get; set; }
     }
 }
+

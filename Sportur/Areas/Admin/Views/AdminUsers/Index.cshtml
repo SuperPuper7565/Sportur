@@ -1,0 +1,49 @@
+﻿@model IEnumerable<User>
+
+<h2>Пользователи</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Роль</th>
+            <th>Статус опта</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@($"{user.Name} {user.Surname}")</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    @if (user.Role == UserRole.Wholesale)
+                    {
+                        @(user.IsWholesaleApproved ? "Одобрен" : "Ожидает модерации")
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+                <td>
+                    @if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+                    {
+                        <form asp-action="ApproveWholesale" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                Одобрить
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

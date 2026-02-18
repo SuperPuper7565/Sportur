@@ -1,5 +1,10 @@
 ﻿<h2>Регистрация</h2>
 
+@if (ViewData.ModelState.ErrorCount > 0)
+{
+    <div class="text-danger">@Html.ValidationSummary()</div>
+}
+
 <form asp-action="Register" method="post">
     <div class="mb-3">
         <label>Email</label>
@@ -19,6 +24,13 @@
     <div class="mb-3">
         <label>Пароль</label>
         <input type="password" name="password" class="form-control" required />
+    </div>
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="requestWholesale" name="requestWholesale" value="true" />
+        <label class="form-check-label" for="requestWholesale">
+            Я оптовый покупатель (доступ после модерации)
+        </label>
     </div>
 
     <button type="submit" class="btn btn-primary">

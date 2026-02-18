@@ -68,3 +68,76 @@ header {
     color: #b02a37;
     font-weight: 600;
 }
+
+/* ================================
+   Layout (Header, Footer, Main)
+   ================================ */
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background-color: #1b6ec2;
+    color: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+}
+
+header .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+header nav {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+header nav a:hover {
+    color: #ffe600;
+}
+
+header .auth {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+header .auth a {
+    color: white;
+    text-decoration: none;
+    border: 1px solid white;
+    padding: 5px 12px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+header .auth a:hover {
+    background-color: white;
+    color: #1b6ec2;
+}
+
+main.container {
+    margin-top: 20px;
+    margin-bottom: 60px;
+    min-height: calc(100vh - 140px);
+}
+
+footer {
+    background-color: #1b6ec2;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 0.9rem;
+    position: relative;
+}
