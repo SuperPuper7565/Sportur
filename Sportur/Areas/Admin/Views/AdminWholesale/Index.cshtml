@@ -16,7 +16,7 @@
     {
         <tr>
             <td>@item.User.Email</td>
-            <td>@($"Велосипед {item.BicycleVariant.BicycleModel.Brand} {item.BicycleVariant.BicycleModel.ModelName} {item.BicycleVariant.BicycleModel.WheelDiameter} {item.BicycleVariant.BicycleColor.Color} {item.BicycleVariant.FrameSize}")</td>
+            <td>@($"Велосипед {item.BicycleVariant.BicycleModel.Brand} {item.BicycleVariant.BicycleModel.ModelName} {item.BicycleVariant.BicycleColor.Color} {item.BicycleVariant.FrameSize}")</td>
             <td>@item.Price</td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>

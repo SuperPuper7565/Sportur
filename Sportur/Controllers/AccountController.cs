@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sportur.Context;
+using Sportur.Models;
 using Sportur.ViewModels;
 
 public class AccountController : Controller
@@ -17,16 +18,7 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult Register(RegisterViewModel model)
     {
-        if (!ModelState.IsValid)
-            return View(model);
-
-        if (_context.Users.Any(u => u.Email == model.Email))
-        {
-            ModelState.AddModelError("", "Пользователь с таким email уже существует");
-            return View(model);
-        }
-
-        CreatePasswordHash(model.Password, out string hash, out byte[] salt);
+        CreatePasswordHash(model.Password, out var hash, out var salt);
 
         var user = new User
         {
@@ -35,7 +27,6 @@ public class AccountController : Controller
             Email = model.Email,
             PasswordHash = hash,
             PasswordSalt = salt,
-
             Role = model.RequestWholesale ? UserRole.Wholesale : UserRole.Retail,
             IsWholesaleApproved = !model.RequestWholesale
         };
@@ -53,10 +44,10 @@ public class AccountController : Controller
 
         HttpContext.Session.SetInt32("UserId", user.Id);
         HttpContext.Session.SetString("UserRole", user.Role.ToString());
+        HttpContext.Session.SetString("UserName", user.Name);
 
         return RedirectToAction("Index", "Catalog");
     }
-
 
     [HttpGet]
     public IActionResult Login() => View();
@@ -73,16 +64,27 @@ public class AccountController : Controller
             return View();
         }
 
+        HttpContext.Session.SetInt32("UserId", user.Id);
+        HttpContext.Session.SetString("UserRole", GetEffectiveRole(user).ToString());
+        HttpContext.Session.SetString("UserName", user.Name);
+
         if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
         {
-            ModelState.AddModelError("", "Ваш аккаунт оптового покупателя находится на модерации.");
-            return View();
+            TempData["WholesalePendingMessage"] =
+                "Ваша заявка на оптовый доступ ещё рассматривается. Пока вам доступна розничная версия кабинета.";
         }
 
-        HttpContext.Session.SetInt32("UserId", user.Id);
-        HttpContext.Session.SetString("UserRole", user.Role.ToString());
-
         return RedirectToAction("Index", "Catalog");
+    }
+
+    private static UserRole GetEffectiveRole(User user)
+    {
+        if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+        {
+            return UserRole.Retail;
+        }
+
+        return user.Role;
     }
 
     public IActionResult Logout()
@@ -112,5 +114,4 @@ public class AccountController : Controller
 
         return computedHash == storedHash;
     }
-
 }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
+using Sportur.Models;
 using System.Text;
+using System.Text.Json;
 
 namespace Sportur.Areas.Admin.Controllers
 {
@@ -15,32 +17,24 @@ namespace Sportur.Areas.Admin.Controllers
             _context = context;
         }
 
+        // =========================
         // Список заказов
+        // =========================
         public IActionResult Index()
         {
-            var orders = _context.Orders
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleModel)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleColor)
+            var orders = BuildOrdersQuery()
                 .OrderByDescending(o => o.CreatedAt)
                 .ToList();
 
             return View(orders);
         }
 
+        // =========================
         // Детали конкретного заказа
+        // =========================
         public IActionResult Details(int id)
         {
-            var order = _context.Orders
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleModel)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleColor)
+            var order = BuildOrdersQuery()
                 .FirstOrDefault(o => o.Id == id);
 
             if (order == null)
@@ -49,16 +43,12 @@ namespace Sportur.Areas.Admin.Controllers
             return View(order);
         }
 
+        // =========================
         // Экспорт заказов в CSV
+        // =========================
         public IActionResult ExportCsv()
         {
-            var orders = _context.Orders
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleModel)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleColor)
+            var orders = BuildOrdersQuery()
                 .OrderBy(o => o.CreatedAt)
                 .ToList();
 
@@ -84,6 +74,53 @@ namespace Sportur.Areas.Admin.Controllers
 
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", $"orders_{DateTime.Now:yyyyMMdd_HHmm}.csv");
+        }
+
+        // =========================
+        // Экспорт заказов в JSON
+        // =========================
+        public IActionResult ExportJson()
+        {
+            var orders = BuildOrdersQuery()
+                .OrderBy(o => o.CreatedAt)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.CreatedAt,
+                    UserEmail = o.User != null ? o.User.Email : "Guest",
+                    Items = o.Items.Select(i => new
+                    {
+                        Model = i.BicycleVariant.BicycleModel.Brand + " " + i.BicycleVariant.BicycleModel.ModelName,
+                        Color = i.BicycleVariant.BicycleColor.Color,
+                        Size = i.BicycleVariant.FrameSize,
+                        i.Price,
+                        i.Quantity,
+                        Total = i.Price * i.Quantity
+                    })
+                })
+                .ToList();
+
+            var json = JsonSerializer.Serialize(orders, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            return File(Encoding.UTF8.GetBytes(json), "application/json", $"orders_{DateTime.Now:yyyyMMdd_HHmm}.json");
+        }
+
+        // =========================
+        // Приватный метод построения запроса
+        // =========================
+        private IQueryable<Order> BuildOrdersQuery()
+        {
+            return _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.BicycleVariant)
+                        .ThenInclude(v => v.BicycleModel)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.BicycleVariant)
+                        .ThenInclude(v => v.BicycleColor);
         }
     }
 }

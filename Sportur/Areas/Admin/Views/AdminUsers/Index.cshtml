@@ -8,37 +8,62 @@
             <th>Id</th>
             <th>Имя</th>
             <th>Email</th>
-            <th>Роль</th>
-            <th>Статус опта</th>
-            <th></th>
+            <th>Текущий тип</th>
+            <th>Заявка на опт</th>
+            <th>Действие</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var user in Model)
         {
+            var hasPendingWholesaleRequest = user.Role == UserRole.Wholesale && !user.IsWholesaleApproved;
+            var isApprovedWholesale = user.Role == UserRole.Wholesale && user.IsWholesaleApproved;
+
             <tr>
                 <td>@user.Id</td>
                 <td>@($"{user.Name} {user.Surname}")</td>
                 <td>@user.Email</td>
-                <td>@user.Role</td>
+
                 <td>
-                    @if (user.Role == UserRole.Wholesale)
+                    @if (user.Role == UserRole.Admin)
                     {
-                        @(user.IsWholesaleApproved ? "Одобрен" : "Ожидает модерации")
+                        <span>Администратор</span>
+                    }
+                    else if (isApprovedWholesale)
+                    {
+                        <span>Оптовый</span>
+                    }
+                    else
+                    {
+                        <span>Розничный</span>
+                    }
+                </td>
+
+                <td>
+                    @if (hasPendingWholesaleRequest)
+                    {
+                        <span class="text-warning">Ожидает подтверждения</span>
                     }
                     else
                     {
                         <span>-</span>
                     }
                 </td>
+
                 <td>
-                    @if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+                    @if (user.Role != UserRole.Admin)
                     {
-                        <form asp-action="ApproveWholesale" method="post" class="d-inline">
+                        <form asp-action="ToggleBuyerType" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@user.Id" />
-                            <button type="submit" class="btn btn-sm btn-success">
-                                Одобрить
+
+                            <button type="submit"
+                                    class="btn btn-sm @(isApprovedWholesale ? "btn-outline-secondary" : "btn-primary")">
+                                @(isApprovedWholesale
+                                                        ? "Сделать розничным"
+                                                        : hasPendingWholesaleRequest
+                                                        ? "Одобрить и сделать оптовым"
+                                                        : "Сделать оптовым")
                             </button>
                         </form>
                     }
