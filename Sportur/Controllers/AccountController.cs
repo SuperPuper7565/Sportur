@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sportur.Context;
+using Sportur.ViewModels;
 
 public class AccountController : Controller
 {
@@ -14,42 +15,48 @@ public class AccountController : Controller
     public IActionResult Register() => View();
 
     [HttpPost]
-    public IActionResult Register(string name, string surname, string email, string password, bool requestWholesale)
+    public IActionResult Register(RegisterViewModel model)
     {
-        if (_context.Users.Any(u => u.Email == email))
+        if (!ModelState.IsValid)
+            return View(model);
+
+        if (_context.Users.Any(u => u.Email == model.Email))
         {
             ModelState.AddModelError("", "Пользователь с таким email уже существует");
-            return View();
+            return View(model);
         }
 
-        CreatePasswordHash(password, out string hash, out byte[] salt);
+        CreatePasswordHash(model.Password, out string hash, out byte[] salt);
 
         var user = new User
         {
-            Name = name,
-            Surname = surname,
-            Email = email,
+            Name = model.Name,
+            Surname = model.Surname,
+            Email = model.Email,
             PasswordHash = hash,
             PasswordSalt = salt,
-            Role = requestWholesale ? UserRole.Wholesale : UserRole.Retail,
-            IsWholesaleApproved = !requestWholesale
+
+            Role = model.RequestWholesale ? UserRole.Wholesale : UserRole.Retail,
+            IsWholesaleApproved = !model.RequestWholesale
         };
 
         _context.Users.Add(user);
         _context.SaveChanges();
 
-        if (requestWholesale)
+        if (model.RequestWholesale)
         {
-            TempData["WholesalePendingMessage"] = "Заявка на оптовый доступ отправлена. Дождитесь подтверждения администратора.";
+            TempData["WholesalePendingMessage"] =
+                "Заявка на оптовый доступ отправлена. Дождитесь подтверждения администратора.";
+
             return RedirectToAction("Login");
         }
 
-        // логиним
         HttpContext.Session.SetInt32("UserId", user.Id);
         HttpContext.Session.SetString("UserRole", user.Role.ToString());
 
         return RedirectToAction("Index", "Catalog");
     }
+
 
     [HttpGet]
     public IActionResult Login() => View();

@@ -18,5 +18,9 @@ namespace Sportur.Models
         [StringLength(500)]
         public string PhotoUrl { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
+        public ICollection<BicycleVariant> Variants { get; set; } = new List<BicycleVariant>();
+
     }
 }

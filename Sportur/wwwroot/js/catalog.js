@@ -17,29 +17,80 @@ function initCatalogDetails() {
     const addBtn = document.getElementById('addToCartBtn');
     const sizeSelect = document.getElementById('sizeSelect');
     const bikeImage = document.getElementById('bikeImage');
+    const title = document.getElementById('bicycleVariantTitle');
 
-    if (!priceSpan || !stockSpan || !variantInput || !addBtn || !sizeSelect) return;
+    if (!priceSpan || !stockSpan || !variantInput || !addBtn || !sizeSelect)
+        return;
 
     let selectedColorId = null;
-    let selectedSizeId = null;
+    let selectedSize = null;
 
-    const resetUI = () => {
+    const defaultTitle = title
+        ? `Велосипед ${title.dataset.brand} ${title.dataset.model}`
+        : '';
+
+    // =========================
+    // Сброс UI
+    // =========================
+    function resetUI() {
         priceSpan.innerText = '—';
         stockSpan.innerText = '';
         variantInput.value = '';
         addBtn.disabled = true;
-    };
 
-    const updateVariant = () => {
-        if (!selectedColorId || !selectedSizeId) {
+        if (title) {
+            title.innerText = defaultTitle;
+        }
+    }
+
+    // =========================
+    // Обновление размеров по цвету
+    // =========================
+    function updateSizesForColor(colorId) {
+
+        const availableSizes = variants
+            .filter(v => v.colorId === colorId)
+            .map(v => v.sizeName);
+
+        Array.from(sizeSelect.options).forEach(option => {
+            if (!option.value) return;
+
+            const isAvailable = availableSizes.includes(option.value);
+            option.disabled = !isAvailable;
+        });
+
+        // сбрасываем выбранный размер если он не подходит
+        if (!availableSizes.includes(selectedSize)) {
+            sizeSelect.value = '';
+            selectedSize = null;
+        }
+
+        // авто-выбор первого доступного
+        const firstAvailable = variants.find(v =>
+            v.colorId === colorId &&
+            v.isAvailable &&
+            v.stockQuantity > 0
+        );
+
+        if (firstAvailable) {
+            sizeSelect.value = firstAvailable.sizeName;
+            selectedSize = firstAvailable.sizeName;
+        }
+    }
+
+    // =========================
+    // Обновление варианта
+    // =========================
+    function updateVariant() {
+
+        if (!selectedColorId || !selectedSize) {
             resetUI();
             return;
         }
 
-        // Находим вариант по цвету и размеру
         const variant = variants.find(v =>
             v.colorId === selectedColorId &&
-            v.sizeId === selectedSizeId
+            v.sizeName === selectedSize
         );
 
         if (!variant) {
@@ -47,39 +98,58 @@ function initCatalogDetails() {
             return;
         }
 
-        // Отображаем цену и остаток
-        priceSpan.innerText = variant.price;
+        if (title) {
+            title.innerText =
+                `${defaultTitle} ${variant.colorName} ${variant.sizeName}`;
+        }
+
+        priceSpan.innerText = variant.price.toLocaleString('ru-RU');
         stockSpan.innerText = `Остаток: ${variant.stockQuantity}`;
+
         variantInput.value = variant.id;
 
-        // Кнопка активна только если вариант доступен и есть в наличии
-        addBtn.disabled = !variant.isAvailable || variant.stockQuantity <= 0;
-    };
+        addBtn.disabled =
+            !variant.isAvailable || variant.stockQuantity <= 0;
+    }
 
+    // =========================
     // Выбор цвета
+    // =========================
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.addEventListener('click', function () {
+
             selectedColorId = parseInt(this.dataset.colorId, 10);
 
-            // Выделение выбранного цвета
-            document.querySelectorAll('.color-btn').forEach(c => c.classList.remove('active'));
+            document
+                .querySelectorAll('.color-btn')
+                .forEach(c => c.classList.remove('active'));
+
             this.classList.add('active');
 
-            // Смена фото
             if (bikeImage && this.dataset.photo) {
                 bikeImage.src = this.dataset.photo;
             }
 
+            updateSizesForColor(selectedColorId);
             updateVariant();
         });
     });
 
+    // =========================
     // Выбор размера
+    // =========================
     sizeSelect.addEventListener('change', function () {
-        selectedSizeId = parseInt(this.value, 10) || null;
+        selectedSize = this.value || null;
         updateVariant();
     });
 
-    // Начальное состояние
-    resetUI();
+    // =========================
+    // Авто-выбор первого цвета
+    // =========================
+    const firstColorBtn = document.querySelector('.color-btn');
+    if (firstColorBtn) {
+        firstColorBtn.click();
+    } else {
+        resetUI();
+    }
 }

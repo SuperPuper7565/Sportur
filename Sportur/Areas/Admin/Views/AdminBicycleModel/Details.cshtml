@@ -1,52 +1,51 @@
 ﻿@model Sportur.Models.BicycleModel
 @using Sportur.Models
 
-<h2>Детали модели</h2>
+<h2>@Model.Brand @Model.ModelName</h2>
 
-<table class="table table-striped">
-    <tr>
-        <th>Бренд</th>
-        <td>@Model.Brand</td>
-    </tr>
+<h4>Основное</h4>
+<table class="table">
+    <tr><th>Категория</th><td>@Html.DisplayFor(m => m.Category)</td></tr>
+    <tr><th>Базовая цена</th><td>@Model.BasePrice.ToString("N2") ₽</td></tr>
+    <tr><th>Описание</th><td>@Model.Description</td></tr>
+</table>
 
-    <tr>
-        <th>Модель</th>
-        <td>@Model.ModelName</td>
-    </tr>
+<h4>Трансмиссия</h4>
+<table class="table">
+    <tr><th>Передачи</th><td>@Model.GearCount</td></tr>
+    <tr><th>Шифтеры</th><td>@Model.Shifters</td></tr>
+    <tr><th>Передний переключатель</th><td>@Model.FrontDerailleur</td></tr>
+    <tr><th>Задний переключатель</th><td>@Model.RearDerailleur</td></tr>
+    <tr><th>Кассета</th><td>@Model.Cassette</td></tr>
+    <tr><th>Цепь</th><td>@Model.Chain</td></tr>
+</table>
 
-    <tr>
-        <th>Категория</th>
-        <td>@Html.DisplayFor(m => m.Category)</td>
-    </tr>
+<h4>Рама и компоненты</h4>
+<table class="table">
+    <tr><th>Материал рамы</th><td>@Model.FrameMaterial</td></tr>
+    <tr><th>Вилка</th><td>@Model.Fork</td></tr>
+    <tr><th>Рулевая</th><td>@Model.Headset</td></tr>
+    <tr><th>Каретка</th><td>@Model.BottomBracket</td></tr>
+    <tr><th>Система</th><td>@Model.Crankset</td></tr>
+    <tr><th>Тормоза</th><td>@Model.Brakes</td></tr>
+</table>
 
-    <tr>
-        <th>Количество передач</th>
-        <td>@Model.GearCount</td>
-    </tr>
-
-    <tr>
-        <th>Диаметр колес</th>
-        <td>@Model.WheelDiameter</td>
-    </tr>
-
-    <tr>
-        <th>Материал рамы</th>
-        <td>@Model.FrameMaterial</td>
-    </tr>
-
-    <tr>
-        <th>Вилка</th>
-        <td>@Model.Fork</td>
-    </tr>
-
-    <tr>
-        <th>Тормоза</th>
-        <td>@Model.Brakes</td>
-    </tr>
+<h4>Колёса</h4>
+<table class="table">
+    <tr><th>Диаметр</th><td>@Model.WheelDiameter</td></tr>
+    <tr><th>Втулки</th><td>@Model.Hubs</td></tr>
+    <tr><th>Обода</th><td>@Model.Rims</td></tr>
+    <tr><th>Покрышки</th><td>@Model.Tires</td></tr>
 </table>
 
 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
     ✏️ Редактировать
+</a>
+
+<a asp-action="Delete"
+   asp-route-id="@Model.Id"
+   class="btn btn-danger">
+    🗑 Удалить
 </a>
 
 <a asp-action="Index" class="btn btn-secondary">

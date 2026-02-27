@@ -20,10 +20,10 @@
         {
             <tr>
                 <td>@order.Id</td>
-                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
                 <td>@(order.User?.Email ?? "Guest")</td>
                 <td>@order.Items.Count</td>
-                <td>@order.Items.Sum(i => i.Quantity * i.BicycleVariant.Price) ₽</td>
+                <td>@order.Items.Sum(i => i.Quantity * i.BicycleVariant.EffectivePrice) ₽</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-primary btn-sm">
                         Подробнее

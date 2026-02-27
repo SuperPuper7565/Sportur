@@ -12,7 +12,7 @@ namespace Sportur.Models
         public User User { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalPrice { get; set; }

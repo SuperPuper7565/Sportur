@@ -22,7 +22,7 @@
             @foreach (var variant in ViewBag.Variants)
             {
                 <option value="@variant.Id">
-                    @variant.BicycleModel.Brand @variant.BicycleModel.ModelName
+                    @($"Велосипед {variant.BicycleModel.Brand} {variant.BicycleModel.ModelName} {variant.BicycleModel.WheelDiameter} {variant.BicycleColor.Color} {variant.BicycleSize.FrameSize}")
                 </option>
             }
         </select>

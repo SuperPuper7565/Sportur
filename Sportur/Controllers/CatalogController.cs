@@ -30,44 +30,56 @@ namespace Sportur.Controllers
                 wholesalePrices = _context.WholesalePrices
                     .Where(w => w.UserId == userId.Value)
                     .GroupBy(w => w.BicycleVariantId)
-                    .ToDictionary(g => g.Key, g => g.First().Price);
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.OrderByDescending(x => x.Id).First().Price
+                    );
             }
 
-            var modelsFromDb = _context.BicycleModels
-                .Include(m => m.Variants)
-                    .ThenInclude(v => v.BicycleColor)
+            var models = _context.BicycleModels
+                .Include(m => m.Colors)
+                    .ThenInclude(c => c.Variants)
                 .Where(m => category == null || m.Category == category)
-                .AsEnumerable();
-
-            var models = modelsFromDb
-                .Select(m => new BicycleCatalogItemViewModel
+                .ToList()
+                .Select(m =>
                 {
-                    Id = m.Id,
-                    Brand = m.Brand,
-                    ModelName = m.ModelName,
-                    Category = m.Category,
+                    // фильтруем только активные цвета
+                    var activeColors = m.Colors.Where(c => c.IsActive).ToList();
 
-                    PreviewImageUrl = m.Variants
-                        .Select(v => v.BicycleColor.PhotoUrl)
-                        .FirstOrDefault(),
+                    var allVariants = activeColors
+                        .SelectMany(c => c.Variants)
+                        .ToList();
 
-                    MinPrice = m.Variants.Any()
-                        ? m.Variants.Min(v =>
-                            wholesalePrices.TryGetValue(v.Id, out var price)
-                                ? price
-                                : v.Price)
-                        : 0,
+                    decimal GetVariantPrice(BicycleVariant v)
+                    {
+                        if (wholesalePrices.TryGetValue(v.Id, out var wholesale))
+                            return wholesale;
 
-                    ColorsCount = m.Variants
-                        .Select(v => v.BicycleColorId)
-                        .Distinct()
-                        .Count()
+                        return v.PriceOverride ?? m.BasePrice;
+                    }
+
+                    return new BicycleCatalogItemViewModel
+                    {
+                        Id = m.Id,
+                        Brand = m.Brand,
+                        ModelName = m.ModelName,
+                        Category = m.Category,
+
+                        PreviewImageUrl = activeColors
+                            .Select(c => c.PhotoUrl)
+                            .FirstOrDefault(),
+
+                        MinPrice = allVariants.Any()
+                            ? allVariants.Min(v => GetVariantPrice(v))
+                            : m.BasePrice,
+
+                        ColorsCount = activeColors.Count
+                    };
                 })
                 .ToList();
 
             return View(models);
         }
-
 
         // =========================
         // Детали модели
@@ -84,65 +96,91 @@ namespace Sportur.Controllers
                 wholesalePrices = _context.WholesalePrices
                     .Where(w => w.UserId == userId.Value)
                     .GroupBy(w => w.BicycleVariantId)
-                    .ToDictionary(g => g.Key, g => g.First().Price);
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.OrderByDescending(x => x.Id).First().Price
+                    );
             }
 
             var model = _context.BicycleModels
-                .Include(m => m.Variants)
-                    .ThenInclude(v => v.BicycleColor)
-                .Include(m => m.Variants)
-                    .ThenInclude(v => v.BicycleSize)
+                .Include(m => m.Colors)
+                    .ThenInclude(c => c.Variants)
                 .FirstOrDefault(m => m.Id == id);
 
             if (model == null)
                 return NotFound();
+
+            decimal GetVariantPrice(BicycleVariant v)
+            {
+                if (wholesalePrices.TryGetValue(v.Id, out var wholesale))
+                    return wholesale;
+
+                return v.PriceOverride ?? model.BasePrice;
+            }
+
+            var activeColors = model.Colors.Where(c => c.IsActive).ToList();
+
+            var allVariants = activeColors
+                .SelectMany(c => c.Variants)
+                .ToList();
 
             var vm = new BicycleDetailsViewModel
             {
                 ModelId = model.Id,
                 Brand = model.Brand,
                 ModelName = model.ModelName,
+                WheelDiameter = model.WheelDiameter,
                 Category = model.Category,
                 Description = model.Description,
 
-                Colors = model.Variants
-                    .Select(v => v.BicycleColor)
-                    .Distinct()
-                    .Select(c => new BicycleColorViewModel
-                    {
-                        Id = c.Id,
-                        Color = c.Color,
-                        PhotoUrl = c.PhotoUrl
-                    })
-                    .ToList(),
+                GearCount = model.GearCount,
+                FrameMaterial = model.FrameMaterial,
+                Fork = model.Fork,
+                Headset = model.Headset,
+                Shifters = model.Shifters,
+                FrontDerailleur = model.FrontDerailleur,
+                RearDerailleur = model.RearDerailleur,
+                BottomBracket = model.BottomBracket,
+                Crankset = model.Crankset,
+                Cassette = model.Cassette,
+                Chain = model.Chain,
+                Brakes = model.Brakes,
+                Hubs = model.Hubs,
+                Rims = model.Rims,
+                Tires = model.Tires,
+                Accessories = model.Accessories,
 
-                Sizes = model.Variants
-                    .Select(v => v.BicycleSize)
-                    .Distinct()
-                    .Select(s => new BicycleSizeViewModel
-                    {
-                        Id = s.Id,
-                        FrameSize = s.FrameSize
-                    })
-                    .ToList(),
+                Colors = activeColors
+                     .Select(c => new BicycleColorViewModel
+                     {
+                         Id = c.Id,
+                         Color = c.Color,
+                         PhotoUrl = c.PhotoUrl
+                     })
+                     .ToList(),
 
-                Variants = model.Variants
-                    .Select(v => new BicycleVariantViewModel
-                    {
-                        Id = v.Id,
-                        ColorId = v.BicycleColorId,
-                        SizeId = v.BicycleSizeId,
-                        Price = wholesalePrices.TryGetValue(v.Id, out var price)
-                            ? price
-                            : v.Price,
-                        StockQuantity = v.StockQuantity,
-                        IsAvailable = v.IsAvailable
-                    })
-                    .ToList()
+                Sizes = allVariants
+                     .Where(v => !string.IsNullOrEmpty(v.FrameSize))
+                     .Select(v => v.FrameSize)
+                     .Distinct()
+                     .OrderBy(s => s)
+                     .ToList(),
+
+                Variants = allVariants
+                     .Select(v => new BicycleVariantViewModel
+                     {
+                         Id = v.Id,
+                         ColorId = v.BicycleColorId,
+                         ColorName = v.BicycleColor.Color,
+                         SizeName = v.FrameSize,
+                         Price = GetVariantPrice(v),
+                         StockQuantity = v.StockQuantity,
+                         IsAvailable = v.IsAvailable
+                     })
+                     .ToList()
             };
 
             return View(vm);
         }
-
     }
 }

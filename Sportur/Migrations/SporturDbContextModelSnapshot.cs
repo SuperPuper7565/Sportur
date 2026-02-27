@@ -38,6 +38,9 @@ namespace Sportur.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -58,6 +61,19 @@ namespace Sportur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Accessories")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BottomBracket")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Brakes")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -68,8 +84,23 @@ namespace Sportur.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Cassette")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("Category")
                         .HasColumnType("int");
+
+                    b.Property<string>("Chain")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Crankset")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -86,13 +117,51 @@ namespace Sportur.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("FrontDerailleur")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("GearCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("Headset")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Hubs")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ModelName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RearDerailleur")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Rims")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Shifters")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Tires")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("WheelDiameter")
                         .IsRequired()
@@ -102,29 +171,6 @@ namespace Sportur.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BicycleModels");
-                });
-
-            modelBuilder.Entity("Sportur.Models.BicycleSize", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BicycleModelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FrameSize")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BicycleModelId");
-
-                    b.ToTable("BicycleSizes");
                 });
 
             modelBuilder.Entity("Sportur.Models.BicycleVariant", b =>
@@ -141,13 +187,15 @@ namespace Sportur.Migrations
                     b.Property<int>("BicycleModelId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BicycleSizeId")
-                        .HasColumnType("int");
+                    b.Property<string>("FrameSize")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal?>("PriceOverride")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StockQuantity")
@@ -155,11 +203,9 @@ namespace Sportur.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BicycleColorId");
+                    b.HasIndex("BicycleModelId");
 
-                    b.HasIndex("BicycleSizeId");
-
-                    b.HasIndex("BicycleModelId", "BicycleColorId", "BicycleSizeId")
+                    b.HasIndex("BicycleColorId", "FrameSize")
                         .IsUnique();
 
                     b.ToTable("BicycleVariants");
@@ -173,7 +219,7 @@ namespace Sportur.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("OrderDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
@@ -241,9 +287,10 @@ namespace Sportur.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BicycleVariantId");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("BicycleVariantId", "UserId")
+                        .IsUnique();
 
                     b.ToTable("WholesalePrices");
                 });
@@ -298,42 +345,23 @@ namespace Sportur.Migrations
                     b.Navigation("BicycleModel");
                 });
 
-            modelBuilder.Entity("Sportur.Models.BicycleSize", b =>
-                {
-                    b.HasOne("Sportur.Models.BicycleModel", "BicycleModel")
-                        .WithMany("Sizes")
-                        .HasForeignKey("BicycleModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BicycleModel");
-                });
-
             modelBuilder.Entity("Sportur.Models.BicycleVariant", b =>
                 {
                     b.HasOne("Sportur.Models.BicycleColor", "BicycleColor")
-                        .WithMany()
+                        .WithMany("Variants")
                         .HasForeignKey("BicycleColorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Sportur.Models.BicycleModel", "BicycleModel")
-                        .WithMany("Variants")
+                        .WithMany()
                         .HasForeignKey("BicycleModelId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Sportur.Models.BicycleSize", "BicycleSize")
-                        .WithMany()
-                        .HasForeignKey("BicycleSizeId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BicycleColor");
 
                     b.Navigation("BicycleModel");
-
-                    b.Navigation("BicycleSize");
                 });
 
             modelBuilder.Entity("Sportur.Models.Order", b =>
@@ -348,7 +376,7 @@ namespace Sportur.Migrations
             modelBuilder.Entity("Sportur.Models.OrderItem", b =>
                 {
                     b.HasOne("Sportur.Models.BicycleVariant", "BicycleVariant")
-                        .WithMany()
+                        .WithMany("OrderItems")
                         .HasForeignKey("BicycleVariantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -383,13 +411,19 @@ namespace Sportur.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Sportur.Models.BicycleColor", b =>
+                {
+                    b.Navigation("Variants");
+                });
+
             modelBuilder.Entity("Sportur.Models.BicycleModel", b =>
                 {
                     b.Navigation("Colors");
+                });
 
-                    b.Navigation("Sizes");
-
-                    b.Navigation("Variants");
+            modelBuilder.Entity("Sportur.Models.BicycleVariant", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("Sportur.Models.Order", b =>

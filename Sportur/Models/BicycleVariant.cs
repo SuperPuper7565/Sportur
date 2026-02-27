@@ -17,17 +17,21 @@ namespace Sportur.Models
         public BicycleColor BicycleColor { get; set; }
 
         [Required]
-        public int BicycleSizeId { get; set; }
-        public BicycleSize BicycleSize { get; set; }
+        [StringLength(20)]
+        public string FrameSize { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Price { get; set; }
+        public decimal? PriceOverride { get; set; }
 
         [Required]
         public int StockQuantity { get; set; }
 
         public bool IsAvailable { get; set; } = true;
-    }
 
+        [NotMapped]
+        public decimal EffectivePrice =>
+            PriceOverride ?? BicycleModel.BasePrice;
+
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    }
 }

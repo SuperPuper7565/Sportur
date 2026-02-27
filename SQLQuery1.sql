@@ -1,0 +1,2 @@
+﻿ALTER TABLE BicycleModels
+ADD IsDeleted bit NOT NULL DEFAULT 0;

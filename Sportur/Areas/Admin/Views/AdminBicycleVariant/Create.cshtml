@@ -5,6 +5,7 @@
 <form asp-action="Create" method="post" data-variant-form="true">
     <div asp-validation-summary="All" class="text-danger"></div>
 
+    <!-- Модель -->
     <div class="mb-3">
         <label asp-for="BicycleModelId" class="form-label"></label>
         <select asp-for="BicycleModelId"
@@ -21,27 +22,29 @@
         </select>
     </div>
 
+    <!-- Цвет -->
     <div class="mb-3">
         <label asp-for="BicycleColorId" class="form-label"></label>
         <select asp-for="BicycleColorId"
                 class="form-select"
                 data-variant-color="true">
+            <option value="">-- выберите цвет --</option>
         </select>
     </div>
 
+    <!-- Размер -->
     <div class="mb-3">
-        <label asp-for="BicycleSizeId" class="form-label"></label>
-        <select asp-for="BicycleSizeId"
-                class="form-select"
-                data-variant-size="true">
-        </select>
+        <label asp-for="FrameSize" class="form-label"></label>
+        <input asp-for="FrameSize" class="form-control" />
     </div>
 
+    <!-- Цена -->
     <div class="mb-3">
         <label asp-for="Price" class="form-label"></label>
         <input asp-for="Price" type="number" step="0.01" class="form-control" />
     </div>
 
+    <!-- Количество -->
     <div class="mb-3">
         <label asp-for="StockQuantity" class="form-label"></label>
         <input asp-for="StockQuantity" type="number" class="form-control" />

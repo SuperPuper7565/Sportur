@@ -1,0 +1,30 @@
+﻿@model Sportur.Models.BicycleModel
+
+<h2>Удаление модели</h2>
+
+<div class="alert alert-danger">
+    Вы уверены, что хотите удалить модель?
+</div>
+
+<table class="table">
+    <tr>
+        <th>Бренд</th>
+        <td>@Model.Brand</td>
+    </tr>
+    <tr>
+        <th>Модель</th>
+        <td>@Model.ModelName</td>
+    </tr>
+</table>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <button type="submit" class="btn btn-danger">
+        🗑 Удалить
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Отмена
+    </a>
+</form>

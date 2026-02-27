@@ -1,34 +1,43 @@
-﻿<h2>Регистрация</h2>
+﻿@model RegisterViewModel
+
+<h2>Регистрация</h2>
 
 @if (ViewData.ModelState.ErrorCount > 0)
 {
-    <div class="text-danger">@Html.ValidationSummary()</div>
+    <div class="text-danger mb-3">
+        @Html.ValidationSummary()
+    </div>
 }
 
-<form asp-action="Register" method="post">
+<form asp-action="Register" method="post" autocomplete="off">
+
     <div class="mb-3">
-        <label>Email</label>
-        <input type="email" name="email" class="form-control" required />
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label>Имя</label>
-        <input type="text" name="name" class="form-control" required />
+        <label asp-for="Name" class="form-label">Имя</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label>Фамилия</label>
-        <input type="text" name="surname" class="form-control" required />
+        <label asp-for="Surname" class="form-label">Фамилия</label>
+        <input asp-for="Surname" class="form-control" />
+        <span asp-validation-for="Surname" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label>Пароль</label>
-        <input type="password" name="password" class="form-control" required />
+        <label asp-for="Password" class="form-label">Пароль</label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
     <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="requestWholesale" name="requestWholesale" value="true" />
-        <label class="form-check-label" for="requestWholesale">
+        <input asp-for="RequestWholesale" class="form-check-input" />
+        <label asp-for="RequestWholesale" class="form-check-label">
             Я оптовый покупатель (доступ после модерации)
         </label>
     </div>
@@ -44,3 +53,7 @@
     Уже есть аккаунт?
     <a asp-action="Login">Войти</a>
 </p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

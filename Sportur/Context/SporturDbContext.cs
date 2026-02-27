@@ -10,12 +10,8 @@ namespace Sportur.Context
 
         public DbSet<User> Users { get; set; }
 
-        // Убираем Category, так как теперь это enum
-        // public DbSet<Category> Categories { get; set; }
-
         public DbSet<BicycleModel> BicycleModels { get; set; }
         public DbSet<BicycleColor> BicycleColors { get; set; }
-        public DbSet<BicycleSize> BicycleSizes { get; set; }
         public DbSet<BicycleVariant> BicycleVariants { get; set; }
 
         public DbSet<Order> Orders { get; set; }
@@ -27,77 +23,61 @@ namespace Sportur.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            // =======================
-            // BicycleModel → Colors
-            // =======================
+            // Soft delete для моделей
+            modelBuilder.Entity<BicycleModel>()
+                .HasQueryFilter(m => !m.IsDeleted);
+
+            // Color → Model
             modelBuilder.Entity<BicycleColor>()
                 .HasOne(c => c.BicycleModel)
                 .WithMany(m => m.Colors)
                 .HasForeignKey(c => c.BicycleModelId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // =======================
-            // BicycleModel → Sizes
-            // =======================
-            modelBuilder.Entity<BicycleSize>()
-                .HasOne(s => s.BicycleModel)
-                .WithMany(m => m.Sizes)
-                .HasForeignKey(s => s.BicycleModelId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // =======================
-            // BicycleVariant (SKU)
-            // =======================
-            modelBuilder.Entity<BicycleVariant>()
-                .HasOne(v => v.BicycleModel)
-                .WithMany(m => m.Variants)
-                .HasForeignKey(v => v.BicycleModelId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+            // Variant → Color
             modelBuilder.Entity<BicycleVariant>()
                 .HasOne(v => v.BicycleColor)
-                .WithMany()
+                .WithMany(m => m.Variants)
                 .HasForeignKey(v => v.BicycleColorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<BicycleVariant>()
-                .HasOne(v => v.BicycleSize)
-                .WithMany()
-                .HasForeignKey(v => v.BicycleSizeId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+            // Уникальность SKU
             modelBuilder.Entity<BicycleVariant>()
                 .HasIndex(v => new
                 {
-                    v.BicycleModelId,
                     v.BicycleColorId,
-                    v.BicycleSizeId
+                    v.FrameSize
                 })
                 .IsUnique();
 
-            // =======================
-            // Orders
-            // =======================
+            // Order → Items
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Order)
                 .WithMany(o => o.Items)
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // OrderItem → Variant
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.BicycleVariant)
-                .WithMany()
+                .WithMany(v => v.OrderItems)
                 .HasForeignKey(oi => oi.BicycleVariantId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // =======================
-            // Wholesale prices
-            // =======================
+            // WholesalePrice → Variant
             modelBuilder.Entity<WholesalePrice>()
                 .HasOne(w => w.BicycleVariant)
                 .WithMany()
                 .HasForeignKey(w => w.BicycleVariantId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WholesalePrice>()
+                .HasIndex(w => new
+                {
+                    w.BicycleVariantId,
+                    w.UserId
+                })
+                .IsUnique();
         }
     }
 }

@@ -10,16 +10,19 @@ namespace Sportur.Areas.Admin.Controllers
     public class AdminBicycleColorController : Controller
     {
         private readonly SporturDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public AdminBicycleColorController(SporturDbContext context)
+        public AdminBicycleColorController(SporturDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         public IActionResult Index()
         {
             var colors = _context.BicycleColors
                 .Include(c => c.BicycleModel)
+                .Where(c => c.IsActive)
                 .OrderBy(c => c.BicycleModel.Brand)
                 .ThenBy(c => c.BicycleModel.ModelName)
                 .ThenBy(c => c.Color)
@@ -34,7 +37,7 @@ namespace Sportur.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(AdminBicycleColorFormViewModel model)
+        public async Task<IActionResult> Create(AdminBicycleColorFormViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(BuildFormViewModel(model));
@@ -45,27 +48,10 @@ namespace Sportur.Areas.Admin.Controllers
                 Color = model.Color
             };
 
-            // Загружаем файл, если выбран
-            if (model.PhotoFile != null && model.PhotoFile.Length > 0)
-            {
-                var fileName = Path.GetFileName(model.PhotoFile.FileName);
-                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "bicycles");
-
-                if (!Directory.Exists(uploadPath))
-                    Directory.CreateDirectory(uploadPath);
-
-                var filePath = Path.Combine(uploadPath, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.PhotoFile.CopyTo(stream);
-                }
-
-                color.PhotoUrl = $"/images/bicycles/{fileName}";
-            }
+            await SavePhotoFileAsync(model, color);
 
             _context.BicycleColors.Add(color);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -73,8 +59,7 @@ namespace Sportur.Areas.Admin.Controllers
         public IActionResult Edit(int id)
         {
             var color = _context.BicycleColors.Find(id);
-            if (color == null)
-                return NotFound();
+            if (color == null) return NotFound();
 
             var model = BuildFormViewModel(new AdminBicycleColorFormViewModel
             {
@@ -88,41 +73,56 @@ namespace Sportur.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(AdminBicycleColorFormViewModel model)
+        public async Task<IActionResult> Edit(AdminBicycleColorFormViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(BuildFormViewModel(model));
 
-            var color = _context.BicycleColors.Find(model.Id);
-            if (color == null)
-                return NotFound();
+            var color = await _context.BicycleColors.FindAsync(model.Id);
+            if (color == null) return NotFound();
 
             color.BicycleModelId = model.BicycleModelId;
             color.Color = model.Color;
 
-            // Загружаем новый файл, если выбран
-            if (model.PhotoFile != null && model.PhotoFile.Length > 0)
-            {
-                var fileName = Path.GetFileName(model.PhotoFile.FileName);
-                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "bicycles");
-
-                if (!Directory.Exists(uploadPath))
-                    Directory.CreateDirectory(uploadPath);
-
-                var filePath = Path.Combine(uploadPath, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.PhotoFile.CopyTo(stream);
-                }
-
-                color.PhotoUrl = $"/images/bicycles/{fileName}";
-            }
+            await SavePhotoFileAsync(model, color);
 
             _context.BicycleColors.Update(color);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task SavePhotoFileAsync(AdminBicycleColorFormViewModel model, BicycleColor color)
+        {
+            if (model.PhotoFile == null || model.PhotoFile.Length == 0) return;
+
+            // Ограничение размера файла (например до 5 МБ)
+            if (model.PhotoFile.Length > 5 * 1024 * 1024)
+            {
+                ModelState.AddModelError("PhotoFile", "Файл слишком большой (макс 5 МБ).");
+                return;
+            }
+
+            // Получаем безопасное уникальное имя файла
+            var fileName = Path.GetFileNameWithoutExtension(model.PhotoFile.FileName);
+            var ext = Path.GetExtension(model.PhotoFile.FileName);
+            fileName = $"{fileName}_{Guid.NewGuid()}{ext}";
+
+            // Полный путь через WebRootPath
+            var uploadPath = Path.Combine(_env.WebRootPath, "images", "bicycles");
+
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
+
+            var filePath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.PhotoFile.CopyToAsync(stream);
+            }
+
+            // Сохраняем относительный путь для отображения в браузере
+            color.PhotoUrl = $"/images/bicycles/{fileName}";
         }
 
         public IActionResult Delete(int id)
@@ -131,8 +131,7 @@ namespace Sportur.Areas.Admin.Controllers
                 .Include(c => c.BicycleModel)
                 .FirstOrDefault(c => c.Id == id);
 
-            if (color == null)
-                return NotFound();
+            if (color == null) return NotFound();
 
             return View(color);
         }
@@ -141,10 +140,9 @@ namespace Sportur.Areas.Admin.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var color = _context.BicycleColors.Find(id);
-            if (color == null)
-                return NotFound();
+            if (color == null) return NotFound();
 
-            _context.BicycleColors.Remove(color);
+            color.IsActive = false;
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));

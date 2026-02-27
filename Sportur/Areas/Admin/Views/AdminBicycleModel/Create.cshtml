@@ -7,53 +7,56 @@
 
     <div asp-validation-summary="All" class="text-danger"></div>
 
+    <h4>Основное</h4>
+
     <div>
-        <label>Бренд</label>
+        <label asp-for="Brand"></label>
         <input asp-for="Brand" />
     </div>
 
     <div>
-        <label>Модель</label>
+        <label asp-for="ModelName"></label>
         <input asp-for="ModelName" />
     </div>
 
     <div>
-        <label>Категория</label>
+        <label asp-for="Category"></label>
         <select asp-for="Category"
                 asp-items="Html.GetEnumSelectList<BicycleCategory>()">
         </select>
     </div>
 
     <div>
-        <label>Описание</label>
-        <textarea asp-for="Description" rows="4"></textarea>
+        <label asp-for="BasePrice"></label>
+        <input asp-for="BasePrice" type="number" step="0.01" />
     </div>
 
     <div>
-        <label>Передачи</label>
-        <input asp-for="GearCount" type="number" />
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description"></textarea>
     </div>
 
-    <div>
-        <label>Диаметр колёс</label>
-        <input asp-for="WheelDiameter" />
-    </div>
+    <hr />
 
-    <div>
-        <label>Материал рамы</label>
-        <input asp-for="FrameMaterial" />
-    </div>
+    <h4>Характеристики</h4>
 
-    <div>
-        <label>Вилка</label>
-        <input asp-for="Fork" />
-    </div>
-
-    <div>
-        <label>Тормоза</label>
-        <input asp-for="Brakes" />
-    </div>
+    <div><label asp-for="WheelDiameter"></label><input asp-for="WheelDiameter" /></div>
+    <div><label asp-for="GearCount"></label><input asp-for="GearCount" type="number" /></div>
+    <div><label asp-for="FrameMaterial"></label><input asp-for="FrameMaterial" /></div>
+    <div><label asp-for="Fork"></label><input asp-for="Fork" /></div>
+    <div><label asp-for="Headset"></label><input asp-for="Headset" /></div>
+    <div><label asp-for="Shifters"></label><input asp-for="Shifters" /></div>
+    <div><label asp-for="FrontDerailleur"></label><input asp-for="FrontDerailleur" /></div>
+    <div><label asp-for="RearDerailleur"></label><input asp-for="RearDerailleur" /></div>
+    <div><label asp-for="BottomBracket"></label><input asp-for="BottomBracket" /></div>
+    <div><label asp-for="Crankset"></label><input asp-for="Crankset" /></div>
+    <div><label asp-for="Cassette"></label><input asp-for="Cassette" /></div>
+    <div><label asp-for="Chain"></label><input asp-for="Chain" /></div>
+    <div><label asp-for="Brakes"></label><input asp-for="Brakes" /></div>
+    <div><label asp-for="Hubs"></label><input asp-for="Hubs" /></div>
+    <div><label asp-for="Rims"></label><input asp-for="Rims" /></div>
+    <div><label asp-for="Tires"></label><input asp-for="Tires" /></div>
+    <div><label asp-for="Accessories"></label><textarea asp-for="Accessories"></textarea></div>
 
     <button type="submit">Создать</button>
-    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
 </form>

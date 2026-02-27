@@ -1,60 +1,126 @@
 ﻿@model Sportur.Models.BicycleModel
 @using Sportur.Models
 
-<h2>Редактирование</h2>
+<h2>Редактирование модели</h2>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
 
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <div>
-        <label>Бренд</label>
-        <input asp-for="Brand" />
+    <div class="mb-3">
+        <label asp-for="Brand" class="form-label"></label>
+        <input asp-for="Brand" class="form-control" />
     </div>
 
-    <div>
-        <label>Модель</label>
-        <input asp-for="ModelName" />
+    <div class="mb-3">
+        <label asp-for="ModelName" class="form-label"></label>
+        <input asp-for="ModelName" class="form-control" />
     </div>
 
-    <div>
-        <label>Категория</label>
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label"></label>
         <select asp-for="Category"
+                class="form-select"
                 asp-items="Html.GetEnumSelectList<BicycleCategory>()">
         </select>
     </div>
 
-    <div>
-        <label>Описание</label>
-        <textarea asp-for="Description" rows="4"></textarea>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
     </div>
 
-    <div>
-        <label>Передачи</label>
-        <input asp-for="GearCount" />
+    <div class="mb-3">
+        <label asp-for="GearCount" class="form-label"></label>
+        <input asp-for="GearCount" class="form-control" type="number" />
     </div>
 
-    <div>
-        <label>Диаметр колёс</label>
-        <input asp-for="WheelDiameter" />
+    <div class="mb-3">
+        <label asp-for="WheelDiameter" class="form-label"></label>
+        <input asp-for="WheelDiameter" class="form-control" />
     </div>
 
-    <div>
-        <label>Материал рамы</label>
-        <input asp-for="FrameMaterial" />
+    <div class="mb-3">
+        <label asp-for="FrameMaterial" class="form-label"></label>
+        <input asp-for="FrameMaterial" class="form-control" />
     </div>
 
-    <div>
-        <label>Вилка</label>
-        <input asp-for="Fork" />
+    <div class="mb-3">
+        <label asp-for="Fork" class="form-label"></label>
+        <input asp-for="Fork" class="form-control" />
     </div>
 
-    <div>
-        <label>Тормоза</label>
-        <input asp-for="Brakes" />
+    <div class="mb-3">
+        <label asp-for="Headset" class="form-label"></label>
+        <input asp-for="Headset" class="form-control" />
     </div>
 
-    <button type="submit">Сохранить</button>
+    <div class="mb-3">
+        <label asp-for="Shifters" class="form-label"></label>
+        <input asp-for="Shifters" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FrontDerailleur" class="form-label"></label>
+        <input asp-for="FrontDerailleur" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RearDerailleur" class="form-label"></label>
+        <input asp-for="RearDerailleur" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BottomBracket" class="form-label"></label>
+        <input asp-for="BottomBracket" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Crankset" class="form-label"></label>
+        <input asp-for="Crankset" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Cassette" class="form-label"></label>
+        <input asp-for="Cassette" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Chain" class="form-label"></label>
+        <input asp-for="Chain" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Brakes" class="form-label"></label>
+        <input asp-for="Brakes" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Hubs" class="form-label"></label>
+        <input asp-for="Hubs" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Rims" class="form-label"></label>
+        <input asp-for="Rims" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Tires" class="form-label"></label>
+        <input asp-for="Tires" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Accessories" class="form-label"></label>
+        <textarea asp-for="Accessories" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BasePrice" class="form-label"></label>
+        <input asp-for="BasePrice" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Сохранить</button>
     <a asp-action="Index" class="btn btn-secondary">Отмена</a>
 </form>

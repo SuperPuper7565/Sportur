@@ -16,25 +16,37 @@ namespace Sportur.Areas.Admin.Controllers
             _context = context;
         }
 
+        // =========================
+        // Список вариантов
+        // =========================
         public IActionResult Index()
         {
             var variants = _context.BicycleVariants
                 .Include(v => v.BicycleModel)
                 .Include(v => v.BicycleColor)
-                .Include(v => v.BicycleSize)
                 .OrderBy(v => v.BicycleModel.Brand)
                 .ThenBy(v => v.BicycleModel.ModelName)
                 .ThenBy(v => v.BicycleColor.Color)
-                .ThenBy(v => v.BicycleSize.FrameSize)
                 .ToList();
 
             return View(variants);
         }
 
+        // =========================
+        // Создание нового варианта
+        // =========================
         public IActionResult Create()
         {
-            // В Create цвета и ростовки НЕ грузим
-            return View(BuildFormViewModel(loadDependentData: false));
+            var modelVm = BuildFormViewModel(loadDependentData: false);
+
+            // Если есть хотя бы одна модель, подставляем её для Price
+            if (modelVm.Models.Any())
+            {
+                modelVm.BicycleModelId = modelVm.Models.First().Id;
+                modelVm.Price = GetModelBasePrice(modelVm.BicycleModelId);
+            }
+
+            return View(modelVm);
         }
 
         [HttpPost]
@@ -43,27 +55,20 @@ namespace Sportur.Areas.Admin.Controllers
             if (!ModelState.IsValid)
                 return View(BuildFormViewModel(model, loadDependentData: false));
 
-            if (!IsColorAndSizeBelongToModel(
-                model.BicycleModelId,
-                model.BicycleColorId,
-                model.BicycleSizeId))
-            {
-                ModelState.AddModelError("", "Цвет и ростовка должны принадлежать выбранной модели.");
-                return View(BuildFormViewModel(model, loadDependentData: false));
-            }
-
-            if (VariantExists(model.BicycleModelId, model.BicycleColorId, model.BicycleSizeId))
+            if (VariantExists(model.BicycleModelId, model.BicycleColorId, model.FrameSize, model.Id))
             {
                 ModelState.AddModelError("", "Такой вариант уже существует.");
                 return View(BuildFormViewModel(model, loadDependentData: false));
             }
 
+            var basePrice = GetModelBasePrice(model.BicycleModelId);
+
             var variant = new BicycleVariant
             {
                 BicycleModelId = model.BicycleModelId,
                 BicycleColorId = model.BicycleColorId,
-                BicycleSizeId = model.BicycleSizeId,
-                Price = model.Price,
+                FrameSize = model.FrameSize,
+                PriceOverride = GetOverridePrice(model.Price, basePrice),
                 StockQuantity = model.StockQuantity,
                 IsAvailable = model.IsAvailable
             };
@@ -74,6 +79,9 @@ namespace Sportur.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // Редактирование варианта
+        // =========================
         public IActionResult Edit(int id)
         {
             var variant = _context.BicycleVariants.Find(id);
@@ -85,8 +93,8 @@ namespace Sportur.Areas.Admin.Controllers
                 Id = variant.Id,
                 BicycleModelId = variant.BicycleModelId,
                 BicycleColorId = variant.BicycleColorId,
-                BicycleSizeId = variant.BicycleSizeId,
-                Price = variant.Price,
+                FrameSize = variant.FrameSize,
+                Price = variant.PriceOverride ?? GetModelBasePrice(variant.BicycleModelId),
                 StockQuantity = variant.StockQuantity,
                 IsAvailable = variant.IsAvailable
             };
@@ -100,29 +108,22 @@ namespace Sportur.Areas.Admin.Controllers
             if (!ModelState.IsValid)
                 return View(BuildFormViewModel(model, loadDependentData: true));
 
-            if (!IsColorAndSizeBelongToModel(
-                model.BicycleModelId,
-                model.BicycleColorId,
-                model.BicycleSizeId))
-            {
-                ModelState.AddModelError("", "Цвет и ростовка должны принадлежать выбранной модели.");
-                return View(BuildFormViewModel(model, loadDependentData: true));
-            }
-
             var variant = _context.BicycleVariants.Find(model.Id);
             if (variant == null)
                 return NotFound();
 
-            if (VariantExists(model.BicycleModelId, model.BicycleColorId, model.BicycleSizeId, variant.Id))
+            if (VariantExists(model.BicycleModelId, model.BicycleColorId, model.FrameSize, model.Id))
             {
                 ModelState.AddModelError("", "Такой вариант уже существует.");
-                return View(BuildFormViewModel(model, loadDependentData: true));
+                return View(BuildFormViewModel(model, loadDependentData: false));
             }
+
+            var basePrice = GetModelBasePrice(model.BicycleModelId);
 
             variant.BicycleModelId = model.BicycleModelId;
             variant.BicycleColorId = model.BicycleColorId;
-            variant.BicycleSizeId = model.BicycleSizeId;
-            variant.Price = model.Price;
+            variant.FrameSize = model.FrameSize;
+            variant.PriceOverride = GetOverridePrice(model.Price, basePrice);
             variant.StockQuantity = model.StockQuantity;
             variant.IsAvailable = model.IsAvailable;
 
@@ -131,27 +132,73 @@ namespace Sportur.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // Удаление варианта
+        // =========================
+        public IActionResult Delete(int id)
+        {
+            var variant = _context.BicycleVariants
+                .Include(v => v.BicycleModel)
+                .Include(v => v.BicycleColor)
+                .FirstOrDefault(v => v.Id == id);
+
+            if (variant == null)
+                return NotFound();
+
+            return View(variant);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var variant = _context.BicycleVariants.Find(id);
+            if (variant == null)
+                return NotFound();
+
+            _context.BicycleVariants.Remove(variant);
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =========================
+        // AJAX для подгрузки цветов и цены модели
+        // =========================
         [HttpGet]
         public IActionResult GetModelOptions(int modelId)
         {
-            var colors = _context.BicycleColors
-                .AsNoTracking()
-                .Where(c => c.BicycleModelId == modelId)
-                .OrderBy(c => c.Color)
-                .Select(c => new { id = c.Id, label = c.Color })
-                .ToList();
+            var colors = GetActiveColors(modelId);
+            var basePrice = GetModelBasePrice(modelId);
 
-            var sizes = _context.BicycleSizes
-                .AsNoTracking()
-                .Where(s => s.BicycleModelId == modelId)
-                .OrderBy(s => s.FrameSize)
-                .Select(s => new { id = s.Id, label = s.FrameSize })
-                .ToList();
-
-            return Json(new { colors, sizes });
+            return Json(new { colors, basePrice });
         }
 
-        // ===== helpers =====
+        // =========================
+        // Приватные помощники
+        // =========================
+        private decimal GetModelBasePrice(int modelId)
+        {
+            return _context.BicycleModels
+                .Where(m => m.Id == modelId)
+                .Select(m => m.BasePrice)
+                .FirstOrDefault();
+        }
+
+        private List<VariantOption> GetActiveColors(int modelId)
+        {
+            return _context.BicycleColors
+                .AsNoTracking()
+                .Where(c => c.BicycleModelId == modelId && c.IsActive)
+                .OrderBy(c => c.Color)
+                .Select(c => new VariantOption { Id = c.Id, Label = c.Color })
+                .ToList();
+        }
+
+        private decimal? GetOverridePrice(decimal selectedPrice, decimal basePrice)
+        {
+            return selectedPrice != basePrice ? selectedPrice : null;
+        }
 
         private AdminBicycleVariantFormViewModel BuildFormViewModel(
             AdminBicycleVariantFormViewModel? model = null,
@@ -170,51 +217,29 @@ namespace Sportur.Areas.Admin.Controllers
                 })
                 .ToList();
 
+            if (model.BicycleModelId > 0 && model.Price <= 0)
+            {
+                model.Price = GetModelBasePrice(model.BicycleModelId);
+            }
+
             if (!loadDependentData || model.BicycleModelId == 0)
             {
                 model.Colors = new();
-                model.Sizes = new();
                 return model;
             }
 
-            model.Colors = _context.BicycleColors
-                .AsNoTracking()
-                .Where(c => c.BicycleModelId == model.BicycleModelId)
-                .OrderBy(c => c.Color)
-                .Select(c => new VariantOption
-                {
-                    Id = c.Id,
-                    Label = c.Color
-                })
-                .ToList();
-
-            model.Sizes = _context.BicycleSizes
-                .AsNoTracking()
-                .Where(s => s.BicycleModelId == model.BicycleModelId)
-                .OrderBy(s => s.FrameSize)
-                .Select(s => new VariantOption
-                {
-                    Id = s.Id,
-                    Label = s.FrameSize
-                })
-                .ToList();
+            model.Colors = GetActiveColors(model.BicycleModelId);
 
             return model;
         }
 
-        private bool VariantExists(int modelId, int colorId, int sizeId, int? excludeId = null)
+        private bool VariantExists(int modelId, int colorId, string frameSize, int? excludeId = null)
         {
             return _context.BicycleVariants.Any(v =>
                 v.BicycleModelId == modelId &&
                 v.BicycleColorId == colorId &&
-                v.BicycleSizeId == sizeId &&
+                v.FrameSize == frameSize &&
                 (!excludeId.HasValue || v.Id != excludeId.Value));
-        }
-
-        private bool IsColorAndSizeBelongToModel(int modelId, int colorId, int sizeId)
-        {
-            return _context.BicycleColors.Any(c => c.Id == colorId && c.BicycleModelId == modelId)
-                && _context.BicycleSizes.Any(s => s.Id == sizeId && s.BicycleModelId == modelId);
         }
     }
 }

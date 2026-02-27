@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
 using Sportur.Models;
+using System.Linq;
 
 namespace Sportur.Areas.Admin.Controllers
 {
@@ -22,6 +23,8 @@ namespace Sportur.Areas.Admin.Controllers
                 .Include(p => p.User)
                 .Include(p => p.BicycleVariant)
                     .ThenInclude(v => v.BicycleModel)
+                .Include(p => p.BicycleVariant)
+                    .ThenInclude(v => v.BicycleColor)
                 .ToList();
 
             return View(prices);
@@ -30,9 +33,13 @@ namespace Sportur.Areas.Admin.Controllers
         // Создание
         public IActionResult Create()
         {
-            ViewBag.Users = _context.Users.ToList();
+            ViewBag.Users = _context.Users
+                .Where(u => u.Role == UserRole.Wholesale && u.IsWholesaleApproved)
+                .ToList();
+
             ViewBag.Variants = _context.BicycleVariants
                 .Include(v => v.BicycleModel)
+                .Include(v => v.BicycleColor)
                 .ToList();
 
             return View();
@@ -41,22 +48,45 @@ namespace Sportur.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(WholesalePrice model)
         {
+            var user = _context.Users.Find(model.UserId);
+
+            if (user == null ||
+                user.Role != UserRole.Wholesale ||
+                !user.IsWholesaleApproved)
+            {
+                ModelState.AddModelError("",
+                    "Цена может быть назначена только одобренному оптовому покупателю");
+            }
+
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
+                ViewBag.Users = _context.Users
+                    .Where(u => u.Role == UserRole.Wholesale && u.IsWholesaleApproved)
                     .ToList();
 
-                ViewBag.Users = _context.Users.ToList();
                 ViewBag.Variants = _context.BicycleVariants
                     .Include(v => v.BicycleModel)
+                    .Include(v => v.BicycleColor)
                     .ToList();
 
                 return View(model);
             }
 
-            _context.WholesalePrices.Add(model);
+            var existingPrice = _context.WholesalePrices
+                .FirstOrDefault(x =>
+                    x.UserId == model.UserId &&
+                    x.BicycleVariantId == model.BicycleVariantId);
+
+            if (existingPrice == null)
+            {
+                _context.WholesalePrices.Add(model);
+            }
+            else
+            {
+                existingPrice.Price = model.Price;
+                _context.WholesalePrices.Update(existingPrice);
+            }
+
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
@@ -69,8 +99,10 @@ namespace Sportur.Areas.Admin.Controllers
             if (price == null) return NotFound();
 
             ViewBag.Users = _context.Users.ToList();
+
             ViewBag.Variants = _context.BicycleVariants
                 .Include(v => v.BicycleModel)
+                .Include(v => v.BicycleColor)
                 .ToList();
 
             return View(price);
@@ -82,8 +114,10 @@ namespace Sportur.Areas.Admin.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Users = _context.Users.ToList();
+
                 ViewBag.Variants = _context.BicycleVariants
                     .Include(v => v.BicycleModel)
+                    .Include(v => v.BicycleColor)
                     .ToList();
 
                 return View(model);

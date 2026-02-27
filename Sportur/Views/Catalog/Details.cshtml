@@ -1,6 +1,10 @@
 ﻿@using System.Text.Json
 @model BicycleDetailsViewModel
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/details.css" asp-append-version="true" />
+}
+
 @{
     var variantsJson = JsonSerializer.Serialize(Model.Variants, new JsonSerializerOptions
     {
@@ -8,25 +12,38 @@
     });
 }
 
-<h2>@Model.Brand @Model.ModelName</h2>
+<h2 id="bicycleVariantTitle"
+    data-brand="@Model.Brand"
+    data-model="@Model.ModelName">
+    @($"Велосипед {Model.Brand} {Model.ModelName}")
+</h2>
+
+<a asp-controller="Catalog"
+   asp-action="Index"
+   class="btn btn-outline-primary mb-3">
+    ← Назад к каталогу
+</a>
+
 <p class="text-muted">@Model.Category</p>
 
-<div class="row mt-3" id="catalogDetails" data-variants="@variantsJson">
+<div class="row mt-4"
+     id="catalogDetails"
+     data-variants='@variantsJson'>
 
     <!-- Фото -->
     <div class="col-md-6">
         <img id="bikeImage"
-             src="@Model.Colors.FirstOrDefault()?.PhotoUrl"
-             class="img-fluid"
+             src="@(Model.Colors.FirstOrDefault()?.PhotoUrl ?? "/images/no-image.png")"
+             class="img-fluid rounded shadow-sm"
              alt="Фото велосипеда" />
     </div>
 
-    <!-- Выбор -->
+    <!-- Правая колонка -->
     <div class="col-md-6">
 
         <!-- Цвет -->
         <h4>Цвет</h4>
-        <div id="colors">
+        <div id="colors" class="mb-3">
             @foreach (var color in Model.Colors)
             {
                 <button type="button"
@@ -38,28 +55,25 @@
             }
         </div>
 
-
         <!-- Ростовка -->
-        <h4 class="mt-3">Ростовка</h4>
-
-        <select id="sizeSelect" class="form-select">
+        <h4>Ростовка</h4>
+        <select id="sizeSelect" class="form-select mb-3">
             <option value="">Выберите размер</option>
             @foreach (var size in Model.Sizes)
             {
-                <option value="@size.Id">@size.FrameSize</option>
+                <option value="@size">@size</option>
             }
         </select>
 
-
         <!-- Цена -->
-        <h3 class="mt-3">
+        <h3>
             Цена: <span id="price">—</span> ₽
         </h3>
 
         <!-- Остаток -->
         <p id="stock" class="text-muted"></p>
 
-        <!-- Корзина -->
+        <!-- Добавить в корзину -->
         <form asp-controller="Cart"
               asp-action="Add"
               method="post">
@@ -74,6 +88,93 @@
             </button>
         </form>
 
+        <hr class="my-4" />
+
+        <!-- Характеристики -->
+        <h4>Характеристики</h4>
+
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <th>Диаметр колес</th>
+                    <td>@Model.WheelDiameter</td>
+                </tr>
+                <tr>
+                    <th>Количество скоростей</th>
+                    <td>@Model.GearCount</td>
+                </tr>
+                <tr>
+                    <th>Материал рамы</th>
+                    <td>@Model.FrameMaterial</td>
+                </tr>
+                <tr>
+                    <th>Вилка</th>
+                    <td>@Model.Fork</td>
+                </tr>
+                <tr>
+                    <th>Рулевая колонка</th>
+                    <td>@Model.Headset</td>
+                </tr>
+                <tr>
+                    <th>Шифтеры</th>
+                    <td>@Model.Shifters</td>
+                </tr>
+                <tr>
+                    <th>Передний переключатель</th>
+                    <td>@Model.FrontDerailleur</td>
+                </tr>
+                <tr>
+                    <th>Задний переключатель</th>
+                    <td>@Model.RearDerailleur</td>
+                </tr>
+                <tr>
+                    <th>Каретка</th>
+                    <td>@Model.BottomBracket</td>
+                </tr>
+                <tr>
+                    <th>Система шатунов</th>
+                    <td>@Model.Crankset</td>
+                </tr>
+                <tr>
+                    <th>Кассета / Трещотка</th>
+                    <td>@Model.Cassette</td>
+                </tr>
+                <tr>
+                    <th>Цепь</th>
+                    <td>@Model.Chain</td>
+                </tr>
+                <tr>
+                    <th>Тормоза</th>
+                    <td>@Model.Brakes</td>
+                </tr>
+                <tr>
+                    <th>Втулки</th>
+                    <td>@Model.Hubs</td>
+                </tr>
+                <tr>
+                    <th>Обода</th>
+                    <td>@Model.Rims</td>
+                </tr>
+                <tr>
+                    <th>Покрышки</th>
+                    <td>@Model.Tires</td>
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.Accessories))
+                {
+                    <tr>
+                        <th>Дополнительное оборудование</th>
+                        <td>@Model.Accessories</td>
+                    </tr>
+                }
+            </tbody>
+        </table> 
+
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <hr />
+            <h4>Описание</h4>
+            <p>@Model.Description</p>
+        }
+
     </div>
 </div>
-

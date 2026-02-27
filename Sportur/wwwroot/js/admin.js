@@ -1,16 +1,12 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
-    initAdminVariantFiltering();
-});
-
-function initAdminVariantFiltering() {
     const form = document.querySelector('[data-variant-form="true"]');
     if (!form) return;
 
     const modelSelect = form.querySelector('[data-variant-model="true"]');
     const colorSelect = form.querySelector('[data-variant-color="true"]');
-    const sizeSelect = form.querySelector('[data-variant-size="true"]');
+    const priceInput = form.querySelector('input[name="Price"]');
 
-    if (!modelSelect || !colorSelect || !sizeSelect) return;
+    if (!modelSelect || !colorSelect || !priceInput) return;
 
     const endpoint = modelSelect.dataset.optionsEndpoint;
 
@@ -19,48 +15,58 @@ function initAdminVariantFiltering() {
         select.disabled = true;
     };
 
-    const fillSelect = (select, placeholder, items) => {
-        select.innerHTML = `<option value="">${placeholder}</option>`;
+    const fillColorSelect = (items) => {
+        resetSelect(colorSelect, '-- выберите цвет --');
         items.forEach(item => {
-            select.innerHTML += `<option value="${item.id}">${item.label}</option>`;
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = item.label;
+            colorSelect.appendChild(option);
         });
-        select.disabled = items.length === 0;
+        colorSelect.disabled = items.length === 0;
     };
 
-    // стартовое состояние
-    resetSelect(colorSelect, '-- выберите цвет --');
-    resetSelect(sizeSelect, '-- выберите размер --');
+    const setBasePrice = (basePrice) => {
+        if (priceInput) {
+            priceInput.value = basePrice.toFixed(2);
+        }
+    };
 
-    // если модель уже выбрана (например, Edit), сразу подгружаем варианты
-    if (modelSelect.value) {
-        loadOptions(parseInt(modelSelect.value, 10));
-    }
-
-    modelSelect.addEventListener('change', () => {
-        const modelId = parseInt(modelSelect.value, 10);
-
-        resetSelect(colorSelect, '-- выберите цвет --');
-        resetSelect(sizeSelect, '-- выберите размер --');
-
-        if (!modelId || modelId <= 0) return;
-
-        loadOptions(modelId);
-    });
-
-    async function loadOptions(modelId) {
+    const loadOptions = async (modelId) => {
         try {
             const res = await fetch(`${endpoint}?modelId=${modelId}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
-
             if (!res.ok) return;
-
             const data = await res.json();
 
-            fillSelect(colorSelect, '-- выберите цвет --', data.colors || []);
-            fillSelect(sizeSelect, '-- выберите размер --', data.sizes || []);
+            // Подгружаем цвета
+            fillColorSelect(data.colors || []);
+
+            // Подставляем базовую цену модели
+            if (data.basePrice !== undefined) {
+                setBasePrice(data.basePrice);
+            }
         } catch (e) {
-            console.error('Ошибка загрузки вариантов:', e);
+            console.error('Ошибка загрузки опций модели:', e);
         }
+    };
+
+    // стартовое состояние
+    resetSelect(colorSelect, '-- выберите цвет --');
+
+    // если модель уже выбрана при загрузке
+    if (modelSelect.value) {
+        const modelId = parseInt(modelSelect.value, 10);
+        if (modelId > 0) loadOptions(modelId);
     }
-}
+
+    modelSelect.addEventListener('change', () => {
+        const modelId = parseInt(modelSelect.value, 10);
+        if (!modelId || modelId <= 0) {
+            resetSelect(colorSelect, '-- выберите цвет --');
+            return;
+        }
+        loadOptions(modelId);
+    });
+});

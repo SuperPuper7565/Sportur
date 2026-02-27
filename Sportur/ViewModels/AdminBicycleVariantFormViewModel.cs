@@ -15,8 +15,9 @@ namespace Sportur.ViewModels
         public int BicycleColorId { get; set; }
 
         [Required]
+        [StringLength(20)]
         [Display(Name = "Размер")]
-        public int BicycleSizeId { get; set; }
+        public string FrameSize { get; set; }
 
         [Required]
         [Range(0.01, 1000000)]
@@ -33,7 +34,6 @@ namespace Sportur.ViewModels
 
         public List<VariantOption> Models { get; set; } = new();
         public List<VariantOption> Colors { get; set; } = new();
-        public List<VariantOption> Sizes { get; set; } = new();
     }
 
     public class VariantOption

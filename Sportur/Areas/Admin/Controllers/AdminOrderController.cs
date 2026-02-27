@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
 using System.Text;
@@ -26,10 +25,7 @@ namespace Sportur.Areas.Admin.Controllers
                 .Include(o => o.Items)
                     .ThenInclude(i => i.BicycleVariant)
                         .ThenInclude(v => v.BicycleColor)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleSize)
-                .OrderByDescending(o => o.OrderDate)
+                .OrderByDescending(o => o.CreatedAt)
                 .ToList();
 
             return View(orders);
@@ -45,9 +41,6 @@ namespace Sportur.Areas.Admin.Controllers
                 .Include(o => o.Items)
                     .ThenInclude(i => i.BicycleVariant)
                         .ThenInclude(v => v.BicycleColor)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleSize)
                 .FirstOrDefault(o => o.Id == id);
 
             if (order == null)
@@ -66,14 +59,11 @@ namespace Sportur.Areas.Admin.Controllers
                 .Include(o => o.Items)
                     .ThenInclude(i => i.BicycleVariant)
                         .ThenInclude(v => v.BicycleColor)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleSize)
-                .OrderBy(o => o.OrderDate)
+                .OrderBy(o => o.CreatedAt)
                 .ToList();
 
             var sb = new StringBuilder();
-            sb.AppendLine("OrderId;OrderDate;UserEmail;Model;Color;Size;Price;Quantity;Total");
+            sb.AppendLine("OrderId;CreatedAt;UserEmail;Model;Color;Size;Price;Quantity;Total");
 
             foreach (var order in orders)
             {
@@ -82,12 +72,13 @@ namespace Sportur.Areas.Admin.Controllers
                 foreach (var item in order.Items)
                 {
                     var variant = item.BicycleVariant;
-                    var total = item.Quantity * variant.Price;
+                    var total = item.Quantity * item.Price;
 
-                    sb.AppendLine($"{order.Id};{order.OrderDate:yyyy-MM-dd HH:mm};{userEmail};" +
+                    sb.AppendLine($"{order.Id};{order.CreatedAt:yyyy-MM-dd HH:mm};{userEmail};" +
                         $"{variant.BicycleModel.Brand} {variant.BicycleModel.ModelName};" +
-                        $"{variant.BicycleColor.Color};{variant.BicycleSize.FrameSize};" +
-                        $"{variant.Price};{item.Quantity};{total}");
+                        $"{variant.BicycleColor.Color};" +
+                        $"{variant.FrameSize};" +
+                        $"{item.Price};{item.Quantity};{total}");
                 }
             }
 

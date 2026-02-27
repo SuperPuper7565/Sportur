@@ -25,7 +25,6 @@ namespace Sportur.Controllers
             var variant = _context.BicycleVariants
                 .Include(v => v.BicycleModel)
                 .Include(v => v.BicycleColor)
-                .Include(v => v.BicycleSize)
                 .FirstOrDefault(v =>
                     v.Id == variantId &&
                     v.IsAvailable &&
@@ -39,7 +38,7 @@ namespace Sportur.Controllers
 
             var item = cart.FirstOrDefault(x => x.VariantId == variantId);
 
-            var price = variant.Price;
+            var price = variant.EffectivePrice;
             if (userId.HasValue && role == UserRole.Wholesale.ToString())
             {
                 price = _context.WholesalePrices
@@ -47,7 +46,7 @@ namespace Sportur.Controllers
                     .Select(w => w.Price)
                     .FirstOrDefault() switch
                 {
-                    0 => variant.Price,
+                    0 => variant.EffectivePrice,
                     var wholesalePrice => wholesalePrice
                 };
             }
@@ -67,7 +66,7 @@ namespace Sportur.Controllers
 
                     ModelName = variant.BicycleModel.Brand + " " + variant.BicycleModel.ModelName,
                     Color = variant.BicycleColor.Color,
-                    FrameSize = variant.BicycleSize.FrameSize,
+                    FrameSize = variant.FrameSize,
 
                     Price = price,
                     Quantity = 1,
