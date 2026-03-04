@@ -23,8 +23,8 @@ namespace Sportur.Controllers
             var role = HttpContext.Session.GetString("UserRole");
 
             var variant = _context.BicycleVariants
-                .Include(v => v.BicycleModel)
                 .Include(v => v.BicycleColor)
+                .ThenInclude(c => c.BicycleModel)
                 .FirstOrDefault(v =>
                     v.Id == variantId &&
                     v.IsAvailable &&
@@ -64,7 +64,7 @@ namespace Sportur.Controllers
                 {
                     VariantId = variant.Id,
 
-                    ModelName = variant.BicycleModel.Brand + " " + variant.BicycleModel.ModelName,
+                    ModelName = variant.BicycleColor.BicycleModel.Brand + " " + variant.BicycleColor.BicycleModel.ModelName,
                     Color = variant.BicycleColor.Color,
                     FrameSize = variant.FrameSize,
 

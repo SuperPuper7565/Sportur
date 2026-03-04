@@ -36,6 +36,28 @@
 
                 <a asp-controller="Order" asp-action="My">Мои заказы</a>
 
+                @if (Context.Session.GetString("UserRole") == "Retail")
+                {
+                    var isWholesalePending = Context.Session.GetInt32("WholesalePending") == 1;
+
+                    if (!isWholesalePending)
+                    {
+                        <form asp-controller="Account"
+                              asp-action="RequestWholesaleAccess"
+                              method="post"
+                              style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="auth-action-button">
+                                Подать заявку на оптовый статус
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span>Заявка на оптовый статус отправлена</span>
+                    }
+                }
+
                 @if (Context.Session.GetString("UserRole") == "Admin")
                 {
                     <a asp-area="Admin"
@@ -48,6 +70,27 @@
         </div>
     </header>
 
+    @if (TempData["WholesalePendingMessage"] != null)
+    {
+        <div id="wholesale-popup"
+             class="wholesale-popup-overlay"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="wholesale-popup-message">
+            <div class="wholesale-popup-window">
+                <button type="button"
+                        class="wholesale-popup-close"
+                        aria-label="Закрыть"
+                        onclick="closeWholesalePopup()">
+                    ×
+                </button>
+                <p id="wholesale-popup-message">
+                    @TempData["WholesalePendingMessage"]
+                </p>
+            </div>
+        </div>
+    }
+
     <main class="container">
         @RenderBody()
     </main>
@@ -59,6 +102,16 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/catalog.js" asp-append-version="true"></script>
     <script src="~/js/cart.js" asp-append-version="true"></script>
+
+    <script>
+        function closeWholesalePopup() {
+            const popup = document.getElementById('wholesale-popup');
+            if (popup) {
+                popup.style.display = 'none';
+            }
+        }
+    </script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

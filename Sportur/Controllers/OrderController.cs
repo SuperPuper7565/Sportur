@@ -101,10 +101,8 @@ namespace Sportur.Controllers
                 .Where(o => o.UserId == userId)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleModel)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
                         .ThenInclude(v => v.BicycleColor)
+                            .ThenInclude(c => c.BicycleModel)
                 .OrderByDescending(o => o.CreatedAt)
                 .ToList()
                 .Select(o => new OrderViewModel
@@ -114,7 +112,7 @@ namespace Sportur.Controllers
                     TotalPrice = o.Items.Sum(i => i.BicycleVariant.EffectivePrice * i.Quantity),
                     Items = o.Items.Select(i => new OrderItemViewModel
                     {
-                        ModelName = i.BicycleVariant.BicycleModel.Brand + " " + i.BicycleVariant.BicycleModel.ModelName,
+                        ModelName = i.BicycleVariant.BicycleColor.BicycleModel.Brand + " " + i.BicycleVariant.BicycleColor.BicycleModel.ModelName,
                         Color = i.BicycleVariant.BicycleColor.Color,
                         FrameSize = i.BicycleVariant.FrameSize,
                         Price = i.BicycleVariant.EffectivePrice,

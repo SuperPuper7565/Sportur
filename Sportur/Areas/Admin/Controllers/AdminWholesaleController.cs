@@ -16,21 +16,24 @@ namespace Sportur.Areas.Admin.Controllers
             _context = context;
         }
 
+        // =========================
         // Список всех персональных цен
+        // =========================
         public IActionResult Index()
         {
             var prices = _context.WholesalePrices
                 .Include(p => p.User)
                 .Include(p => p.BicycleVariant)
-                    .ThenInclude(v => v.BicycleModel)
-                .Include(p => p.BicycleVariant)
                     .ThenInclude(v => v.BicycleColor)
+                        .ThenInclude(c => c.BicycleModel)
                 .ToList();
 
             return View(prices);
         }
 
-        // Создание
+        // =========================
+        // Создание персональной цены
+        // =========================
         public IActionResult Create()
         {
             ViewBag.Users = _context.Users
@@ -38,8 +41,8 @@ namespace Sportur.Areas.Admin.Controllers
                 .ToList();
 
             ViewBag.Variants = _context.BicycleVariants
-                .Include(v => v.BicycleModel)
                 .Include(v => v.BicycleColor)
+                    .ThenInclude(c => c.BicycleModel)
                 .ToList();
 
             return View();
@@ -65,8 +68,8 @@ namespace Sportur.Areas.Admin.Controllers
                     .ToList();
 
                 ViewBag.Variants = _context.BicycleVariants
-                    .Include(v => v.BicycleModel)
                     .Include(v => v.BicycleColor)
+                        .ThenInclude(c => c.BicycleModel)
                     .ToList();
 
                 return View(model);
@@ -92,7 +95,9 @@ namespace Sportur.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Редактирование
+        // =========================
+        // Редактирование персональной цены
+        // =========================
         public IActionResult Edit(int id)
         {
             var price = _context.WholesalePrices.Find(id);
@@ -101,8 +106,8 @@ namespace Sportur.Areas.Admin.Controllers
             ViewBag.Users = _context.Users.ToList();
 
             ViewBag.Variants = _context.BicycleVariants
-                .Include(v => v.BicycleModel)
                 .Include(v => v.BicycleColor)
+                    .ThenInclude(c => c.BicycleModel)
                 .ToList();
 
             return View(price);
@@ -116,8 +121,8 @@ namespace Sportur.Areas.Admin.Controllers
                 ViewBag.Users = _context.Users.ToList();
 
                 ViewBag.Variants = _context.BicycleVariants
-                    .Include(v => v.BicycleModel)
                     .Include(v => v.BicycleColor)
+                        .ThenInclude(c => c.BicycleModel)
                     .ToList();
 
                 return View(model);
@@ -129,7 +134,9 @@ namespace Sportur.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Удаление
+        // =========================
+        // Удаление персональной цены
+        // =========================
         public IActionResult Delete(int id)
         {
             var price = _context.WholesalePrices.Find(id);

@@ -1,117 +1,163 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Sportur.Context;
 using Sportur.Models;
 using Sportur.ViewModels;
+using System;
+using System.Linq;
 
-public class AccountController : Controller
+namespace Sportur.Controllers
 {
-    private readonly SporturDbContext _context;
-
-    public AccountController(SporturDbContext context)
+    public class AccountController : Controller
     {
-        _context = context;
-    }
+        private readonly SporturDbContext _context;
 
-    [HttpGet]
-    public IActionResult Register() => View();
-
-    [HttpPost]
-    public IActionResult Register(RegisterViewModel model)
-    {
-        CreatePasswordHash(model.Password, out var hash, out var salt);
-
-        var user = new User
+        public AccountController(SporturDbContext context)
         {
-            Name = model.Name,
-            Surname = model.Surname,
-            Email = model.Email,
-            PasswordHash = hash,
-            PasswordSalt = salt,
-            Role = model.RequestWholesale ? UserRole.Wholesale : UserRole.Retail,
-            IsWholesaleApproved = !model.RequestWholesale
-        };
-
-        _context.Users.Add(user);
-        _context.SaveChanges();
-
-        if (model.RequestWholesale)
-        {
-            TempData["WholesalePendingMessage"] =
-                "Заявка на оптовый доступ отправлена. Дождитесь подтверждения администратора.";
-
-            return RedirectToAction("Login");
+            _context = context;
         }
 
-        HttpContext.Session.SetInt32("UserId", user.Id);
-        HttpContext.Session.SetString("UserRole", user.Role.ToString());
-        HttpContext.Session.SetString("UserName", user.Name);
+        [HttpGet]
+        public IActionResult Register() => View();
 
-        return RedirectToAction("Index", "Catalog");
-    }
-
-    [HttpGet]
-    public IActionResult Login() => View();
-
-    [HttpPost]
-    public IActionResult Login(string email, string password)
-    {
-        var user = _context.Users.FirstOrDefault(u => u.Email == email);
-
-        if (user == null ||
-            !VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(RegisterViewModel model)
         {
-            ModelState.AddModelError("", "Неверный email или пароль");
-            return View();
+            if (!ModelState.IsValid)
+                return View(model);
+
+            CreatePasswordHash(model.Password, out string hash, out byte[] salt);
+
+            var user = new User
+            {
+                Name = model.Name,
+                Surname = model.Surname,
+                Email = model.Email,
+                PasswordHash = hash,
+                PasswordSalt = salt,
+                Role = model.RequestWholesale ? UserRole.Wholesale : UserRole.Retail,
+                IsWholesaleApproved = !model.RequestWholesale
+            };
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            if (model.RequestWholesale)
+            {
+                TempData["WholesalePendingMessage"] =
+                    "Заявка на оптовый доступ отправлена. Дождитесь подтверждения администратора.";
+
+                return RedirectToAction("Login");
+            }
+
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserRole", user.Role.ToString());
+            HttpContext.Session.SetString("UserName", user.Name);
+            HttpContext.Session.SetInt32("WholesalePending", 0);
+
+            return RedirectToAction("Index", "Catalog");
         }
 
-        HttpContext.Session.SetInt32("UserId", user.Id);
-        HttpContext.Session.SetString("UserRole", GetEffectiveRole(user).ToString());
-        HttpContext.Session.SetString("UserName", user.Name);
+        [HttpGet]
+        public IActionResult Login() => View();
 
-        if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(string email, string password)
         {
-            TempData["WholesalePendingMessage"] =
-                "Ваша заявка на оптовый доступ ещё рассматривается. Пока вам доступна розничная версия кабинета.";
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user == null ||
+                !VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+            {
+                ModelState.AddModelError("", "Неверный email или пароль");
+                return View();
+            }
+
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserRole", GetEffectiveRole(user).ToString());
+            HttpContext.Session.SetString("UserName", user.Name);
+
+            HttpContext.Session.SetInt32(
+                "WholesalePending",
+                user.Role == UserRole.Wholesale && !user.IsWholesaleApproved ? 1 : 0
+            );
+
+            if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+            {
+                TempData["WholesalePendingMessage"] =
+                    "Ваша заявка на оптовый доступ ещё рассматривается. Пока вам доступна розничная версия кабинета.";
+            }
+
+            return RedirectToAction("Index", "Catalog");
         }
 
-        return RedirectToAction("Index", "Catalog");
-    }
-
-    private static UserRole GetEffectiveRole(User user)
-    {
-        if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RequestWholesaleAccess()
         {
-            return UserRole.Retail;
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+                return RedirectToAction("Login");
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId.Value);
+
+            if (user == null)
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction("Login");
+            }
+
+            if (user.Role == UserRole.Retail)
+            {
+                user.Role = UserRole.Wholesale;
+                user.IsWholesaleApproved = false;
+                _context.SaveChanges();
+
+                // Пока заявка не одобрена — пользователь остаётся в Retail
+                HttpContext.Session.SetString("UserRole", UserRole.Retail.ToString());
+                HttpContext.Session.SetInt32("WholesalePending", 1);
+
+                TempData["WholesalePendingMessage"] =
+                    "Заявка на оптовый доступ отправлена. Дождитесь подтверждения администратора.";
+            }
+
+            return RedirectToAction("Index", "Catalog");
         }
 
-        return user.Role;
-    }
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Catalog");
+        }
 
-    public IActionResult Logout()
-    {
-        HttpContext.Session.Clear();
-        return RedirectToAction("Index", "Catalog");
-    }
+        private static UserRole GetEffectiveRole(User user)
+        {
+            if (user.Role == UserRole.Wholesale && !user.IsWholesaleApproved)
+                return UserRole.Retail;
 
-    private static void CreatePasswordHash(string password, out string hash, out byte[] salt)
-    {
-        using var hmac = new System.Security.Cryptography.HMACSHA512();
-        salt = hmac.Key;
-        hash = Convert.ToBase64String(
-            hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))
-        );
-    }
+            return user.Role;
+        }
 
-    private static bool VerifyPassword(
-        string password,
-        string storedHash,
-        byte[] storedSalt)
-    {
-        using var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt);
-        var computedHash = Convert.ToBase64String(
-            hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))
-        );
+        private static void CreatePasswordHash(string password, out string hash, out byte[] salt)
+        {
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            salt = hmac.Key;
+            hash = Convert.ToBase64String(
+                hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))
+            );
+        }
 
-        return computedHash == storedHash;
+        private static bool VerifyPassword(string password, string storedHash, byte[] storedSalt)
+        {
+            using var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt);
+            var computedHash = Convert.ToBase64String(
+                hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))
+            );
+
+            return computedHash == storedHash;
+        }
     }
 }

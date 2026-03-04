@@ -65,7 +65,7 @@ namespace Sportur.Areas.Admin.Controllers
                     var total = item.Quantity * item.Price;
 
                     sb.AppendLine($"{order.Id};{order.CreatedAt:yyyy-MM-dd HH:mm};{userEmail};" +
-                        $"{variant.BicycleModel.Brand} {variant.BicycleModel.ModelName};" +
+                        $"{variant.BicycleColor.BicycleModel.Brand} {variant.BicycleColor.BicycleModel.ModelName};" +
                         $"{variant.BicycleColor.Color};" +
                         $"{variant.FrameSize};" +
                         $"{item.Price};{item.Quantity};{total}");
@@ -90,7 +90,7 @@ namespace Sportur.Areas.Admin.Controllers
                     UserEmail = o.User != null ? o.User.Email : "Guest",
                     Items = o.Items.Select(i => new
                     {
-                        Model = i.BicycleVariant.BicycleModel.Brand + " " + i.BicycleVariant.BicycleModel.ModelName,
+                        Model = i.BicycleVariant.BicycleColor.BicycleModel.Brand + " " + i.BicycleVariant.BicycleColor.BicycleModel.ModelName,
                         Color = i.BicycleVariant.BicycleColor.Color,
                         Size = i.BicycleVariant.FrameSize,
                         i.Price,
@@ -117,10 +117,8 @@ namespace Sportur.Areas.Admin.Controllers
                 .Include(o => o.User)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleModel)
-                .Include(o => o.Items)
-                    .ThenInclude(i => i.BicycleVariant)
-                        .ThenInclude(v => v.BicycleColor);
+                        .ThenInclude(v => v.BicycleColor)
+                            .ThenInclude(c => c.BicycleModel);
         }
     }
 }

@@ -141,3 +141,54 @@ footer {
     font-size: 0.9rem;
     position: relative;
 }
+
+.auth-action-button {
+    color: white;
+    background: transparent;
+    border: 1px solid white;
+    padding: 5px 12px;
+    border-radius: 6px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.auth-action-button:hover {
+    background-color: white;
+    color: #1b6ec2;
+}
+
+.wholesale-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.wholesale-popup-window {
+    position: relative;
+    background: white;
+    color: #1f2937;
+    width: min(90%, 420px);
+    padding: 24px 20px 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.wholesale-popup-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.wholesale-popup-window p {
+    margin: 0;
+}

@@ -9,10 +9,6 @@ namespace Sportur.Models
         public int Id { get; set; }
 
         [Required]
-        public int BicycleModelId { get; set; }
-        public BicycleModel BicycleModel { get; set; }
-
-        [Required]
         public int BicycleColorId { get; set; }
         public BicycleColor BicycleColor { get; set; }
 
@@ -30,7 +26,7 @@ namespace Sportur.Models
 
         [NotMapped]
         public decimal EffectivePrice =>
-            PriceOverride ?? BicycleModel.BasePrice;
+            PriceOverride ?? BicycleColor?.BicycleModel?.BasePrice ?? 0m;
 
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
