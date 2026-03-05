@@ -31,6 +31,7 @@ public class BicycleDetailsViewModel
     public string Cassette { get; set; }
     public string Chain { get; set; }
     public string Brakes { get; set; }
+    public BrakeType BrakeType { get; set; }
     public string Hubs { get; set; }
     public string Rims { get; set; }
     public string Tires { get; set; }

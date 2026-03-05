@@ -97,6 +97,11 @@
     </div>
 
     <div class="mb-3">
+        <label asp-for="BrakeType" class="form-label"></label>
+        <select asp-for="BrakeType" class="form-select" asp-items="Html.GetEnumSelectList<BrakeType>()"></select>
+    </div>
+
+    <div class="mb-3">
         <label asp-for="Hubs" class="form-label"></label>
         <input asp-for="Hubs" class="form-control" />
     </div>

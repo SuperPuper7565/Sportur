@@ -18,6 +18,21 @@ namespace Sportur.Models
         Female
     }
 
+    public enum BrakeType
+    {
+        [Display(Name = "Ободной V-brake")]
+        RimVBrake,
+
+        [Display(Name = "Дисковый механический")]
+        MechanicalDisc,
+
+        [Display(Name = "Дисковый гидравлический")]
+        HydraulicDisc,
+
+        [Display(Name = "Ножной")]
+        Coaster
+    }
+
     public class BicycleModel
     {
         [Key]
@@ -91,6 +106,10 @@ namespace Sportur.Models
         [Required, StringLength(100)]
         [Display(Name = "Тормоза")]
         public string Brakes { get; set; }
+
+        [Required]
+        [Display(Name = "Тип тормоза")]
+        public BrakeType BrakeType { get; set; }
 
         [Required, StringLength(100)]
         [Display(Name = "Втулки")]

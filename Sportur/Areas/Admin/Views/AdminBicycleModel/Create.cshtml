@@ -58,6 +58,7 @@
     <div><label asp-for="Cassette"></label><input asp-for="Cassette" /></div>
     <div><label asp-for="Chain"></label><input asp-for="Chain" /></div>
     <div><label asp-for="Brakes"></label><input asp-for="Brakes" /></div>
+    <div><label asp-for="BrakeType"></label><select asp-for="BrakeType" asp-items="Html.GetEnumSelectList<BrakeType>()"></select></div>
     <div><label asp-for="Hubs"></label><input asp-for="Hubs" /></div>
     <div><label asp-for="Rims"></label><input asp-for="Rims" /></div>
     <div><label asp-for="Tires"></label><input asp-for="Tires" /></div>

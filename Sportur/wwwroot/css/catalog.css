@@ -1,54 +1,32 @@
-﻿/* Карточки каталога */
-.catalog-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
+﻿.catalog-header {
+    background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+    border: 1px solid #e7efff;
+    border-radius: 16px;
+    padding: 20px;
 }
 
-    .catalog-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-    }
-
-/* Изображения одинакового размера */
-.catalog-image {
-    height: 220px;
-    width: 100%;
-    object-fit: contain; 
-    background-color: #f8f9fa; 
-    padding: 10px; 
-}
-
-
-/* Заголовок */
-.catalog-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-/* Цена */
-.catalog-price {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #0d6efd;
-}
-
-/* Категория */
-.catalog-category {
-    font-size: 0.9rem;
+.catalog-subtitle {
     color: #6c757d;
 }
 
-/* Текст с цветами */
-.catalog-colors {
-    font-size: 0.9rem;
+.catalog-filters {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 18px rgba(16, 24, 40, 0.04);
+}
+
+.catalog-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
 }
 
 .catalog-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 24px;
+    gap: 22px;
 }
 
 .catalog-link {
@@ -63,20 +41,64 @@
 }
 
 .catalog-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: none;
-    border-radius: 12px;
+    border: 1px solid #edf0f3;
+    border-radius: 14px;
     overflow: hidden;
     cursor: pointer;
+    height: 100%;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .catalog-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
 }
 
 .catalog-card:active {
-    transform: scale(0.98);
+    transform: scale(0.99);
 }
 
+.catalog-image-wrap {
+    background: #f8f9fa;
+    border-bottom: 1px solid #eef0f2;
+}
 
+.catalog-image {
+    height: 230px;
+    width: 100%;
+    object-fit: contain;
+    padding: 12px;
+}
+
+.catalog-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.catalog-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    color: #2f5aa6;
+    background: #ebf2ff;
+}
+
+.catalog-colors {
+    font-size: 0.9rem;
+}
+
+.catalog-price {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0d6efd;
+}
+
+.catalog-empty {
+    border: 1px dashed #cfd8e3;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    background: #f8fafc;
+}

@@ -18,14 +18,47 @@ namespace Sportur.Controllers
             _pricingService = pricingService;
         }
 
-        public IActionResult Index(BicycleCategory? category)
+        public IActionResult Index(
+            string? search,
+            BicycleCategory? category,
+            string? wheelDiameter,
+            int? gearCount,
+            string? frameMaterial,
+            BrakeType? brakeType,
+            string? brand)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
 
-            var models = _context.BicycleModels
+            var query = _context.BicycleModels
                 .Include(m => m.Colors)
                     .ThenInclude(c => c.Variants)
-                .Where(m => category == null || m.Category == category)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var normalizedSearch = search.Trim();
+                query = query.Where(m => m.ModelName.Contains(normalizedSearch));
+            }
+
+            if (category.HasValue)
+                query = query.Where(m => m.Category == category.Value);
+
+            if (!string.IsNullOrWhiteSpace(wheelDiameter))
+                query = query.Where(m => m.WheelDiameter == wheelDiameter);
+
+            if (gearCount.HasValue)
+                query = query.Where(m => m.GearCount == gearCount.Value);
+
+            if (!string.IsNullOrWhiteSpace(frameMaterial))
+                query = query.Where(m => m.FrameMaterial == frameMaterial);
+
+            if (brakeType.HasValue)
+                query = query.Where(m => m.BrakeType == brakeType.Value);
+
+            if (!string.IsNullOrWhiteSpace(brand))
+                query = query.Where(m => m.Brand == brand);
+
+            var models = query
                 .ToList()
                 .Select(m =>
                 {
@@ -46,7 +79,39 @@ namespace Sportur.Controllers
                 })
                 .ToList();
 
-            return View(models);
+            var vm = new CatalogIndexViewModel
+            {
+                Items = models,
+                Search = search,
+                Category = category,
+                WheelDiameter = wheelDiameter,
+                GearCount = gearCount,
+                FrameMaterial = frameMaterial,
+                BrakeType = brakeType,
+                Brand = brand,
+                AvailableWheelDiameters = _context.BicycleModels
+                    .Select(m => m.WheelDiameter)
+                    .Distinct()
+                    .OrderBy(v => v)
+                    .ToList(),
+                AvailableGearCounts = _context.BicycleModels
+                    .Select(m => m.GearCount)
+                    .Distinct()
+                    .OrderBy(v => v)
+                    .ToList(),
+                AvailableFrameMaterials = _context.BicycleModels
+                    .Select(m => m.FrameMaterial)
+                    .Distinct()
+                    .OrderBy(v => v)
+                    .ToList(),
+                AvailableBrands = _context.BicycleModels
+                    .Select(m => m.Brand)
+                    .Distinct()
+                    .OrderBy(v => v)
+                    .ToList()
+            };
+
+            return View(vm);
         }
 
         public IActionResult Details(int id)
@@ -85,6 +150,7 @@ namespace Sportur.Controllers
                 Cassette = model.Cassette,
                 Chain = model.Chain,
                 Brakes = model.Brakes,
+                BrakeType = model.BrakeType,
                 Hubs = model.Hubs,
                 Rims = model.Rims,
                 Tires = model.Tires,

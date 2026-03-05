@@ -72,6 +72,7 @@ namespace Sportur.Areas.Admin.Controllers
             existing.Cassette = model.Cassette;
             existing.Chain = model.Chain;
             existing.Brakes = model.Brakes;
+            existing.BrakeType = model.BrakeType;
             existing.Hubs = model.Hubs;
             existing.Rims = model.Rims;
             existing.Tires = model.Tires;
