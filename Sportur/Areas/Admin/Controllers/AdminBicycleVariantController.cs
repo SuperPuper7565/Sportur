@@ -39,11 +39,10 @@ namespace Sportur.Areas.Admin.Controllers
         {
             var modelVm = BuildFormViewModel(loadDependentData: false);
 
-            // Если есть хотя бы одна модель, подставляем её для Price
+            // Если есть хотя бы одна модель, подставляем её по умолчанию
             if (modelVm.Models.Any())
             {
                 modelVm.BicycleModelId = modelVm.Models.First().Id;
-                modelVm.Price = GetModelBasePrice(modelVm.BicycleModelId);
             }
 
             return View(modelVm);
@@ -67,13 +66,10 @@ namespace Sportur.Areas.Admin.Controllers
                 return View(BuildFormViewModel(model, loadDependentData: true));
             }
 
-            var basePrice = GetModelBasePrice(model.BicycleModelId);
-
             var variant = new BicycleVariant
             {
                 BicycleColorId = model.BicycleColorId,
                 FrameSize = model.FrameSize,
-                PriceOverride = GetOverridePrice(model.Price, basePrice),
                 StockQuantity = model.StockQuantity,
                 IsAvailable = model.IsAvailable
             };
@@ -102,7 +98,6 @@ namespace Sportur.Areas.Admin.Controllers
                 BicycleModelId = variant.BicycleColor.BicycleModelId,
                 BicycleColorId = variant.BicycleColorId,
                 FrameSize = variant.FrameSize,
-                Price = variant.PriceOverride ?? GetModelBasePrice(variant.BicycleColor.BicycleModelId),
                 StockQuantity = variant.StockQuantity,
                 IsAvailable = variant.IsAvailable
             };
@@ -135,11 +130,8 @@ namespace Sportur.Areas.Admin.Controllers
                 return View(BuildFormViewModel(model, loadDependentData: true));
             }
 
-            var basePrice = GetModelBasePrice(model.BicycleModelId);
-
             variant.BicycleColorId = model.BicycleColorId;
             variant.FrameSize = model.FrameSize;
-            variant.PriceOverride = GetOverridePrice(model.Price, basePrice);
             variant.StockQuantity = model.StockQuantity;
             variant.IsAvailable = model.IsAvailable;
 
@@ -179,27 +171,18 @@ namespace Sportur.Areas.Admin.Controllers
         }
 
         // =========================
-        // AJAX для подгрузки цветов и цены модели
+        // AJAX для подгрузки цветов
         // =========================
         [HttpGet]
         public IActionResult GetModelOptions(int modelId)
         {
             var colors = GetActiveColors(modelId);
-            var basePrice = GetModelBasePrice(modelId);
-
-            return Json(new { colors, basePrice });
+            return Json(new { colors });
         }
 
         // =========================
         // Вспомогательные методы
         // =========================
-        private decimal GetModelBasePrice(int modelId)
-        {
-            return _context.BicycleModels
-                .Where(m => m.Id == modelId)
-                .Select(m => m.BasePrice)
-                .FirstOrDefault();
-        }
 
         private List<VariantOption> GetActiveColors(int modelId)
         {
@@ -209,11 +192,6 @@ namespace Sportur.Areas.Admin.Controllers
                 .OrderBy(c => c.Color)
                 .Select(c => new VariantOption { Id = c.Id, Label = c.Color })
                 .ToList();
-        }
-
-        private decimal? GetOverridePrice(decimal selectedPrice, decimal basePrice)
-        {
-            return selectedPrice != basePrice ? selectedPrice : null;
         }
 
         private AdminBicycleVariantFormViewModel BuildFormViewModel(
@@ -232,11 +210,6 @@ namespace Sportur.Areas.Admin.Controllers
                     Label = $"{m.Brand} {m.ModelName}"
                 })
                 .ToList();
-
-            if (model.BicycleModelId > 0 && model.Price <= 0)
-            {
-                model.Price = GetModelBasePrice(model.BicycleModelId);
-            }
 
             if (!loadDependentData || model.BicycleModelId == 0)
             {

@@ -109,13 +109,13 @@ namespace Sportur.Controllers
                 {
                     OrderId = o.Id,
                     CreatedAt = o.CreatedAt,
-                    TotalPrice = o.Items.Sum(i => i.BicycleVariant.EffectivePrice * i.Quantity),
+                    TotalPrice = o.TotalPrice,
                     Items = o.Items.Select(i => new OrderItemViewModel
                     {
                         ModelName = i.BicycleVariant.BicycleColor.BicycleModel.Brand + " " + i.BicycleVariant.BicycleColor.BicycleModel.ModelName,
                         Color = i.BicycleVariant.BicycleColor.Color,
                         FrameSize = i.BicycleVariant.FrameSize,
-                        Price = i.BicycleVariant.EffectivePrice,
+                        Price = i.Price,
                         Quantity = i.Quantity
                     }).ToList()
                 }).ToList();

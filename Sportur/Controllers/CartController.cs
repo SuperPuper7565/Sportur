@@ -38,7 +38,7 @@ namespace Sportur.Controllers
 
             var item = cart.FirstOrDefault(x => x.VariantId == variantId);
 
-            var price = variant.EffectivePrice;
+            var price = variant.BicycleColor.BicycleModel.Price;
             if (userId.HasValue && role == UserRole.Wholesale.ToString())
             {
                 price = _context.WholesalePrices
@@ -46,7 +46,7 @@ namespace Sportur.Controllers
                     .Select(w => w.Price)
                     .FirstOrDefault() switch
                 {
-                    0 => variant.EffectivePrice,
+                    0 => variant.BicycleColor.BicycleModel.Price,
                     var wholesalePrice => wholesalePrice
                 };
             }

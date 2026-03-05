@@ -55,7 +55,7 @@ namespace Sportur.Controllers
                         if (wholesalePrices.TryGetValue(v.Id, out var wholesale))
                             return wholesale;
 
-                        return v.PriceOverride ?? m.BasePrice;
+                        return m.Price;
                     }
 
                     return new BicycleCatalogItemViewModel
@@ -71,7 +71,7 @@ namespace Sportur.Controllers
 
                         MinPrice = allVariants.Any()
                             ? allVariants.Min(v => GetVariantPrice(v))
-                            : m.BasePrice,
+                            : m.Price,
 
                         ColorsCount = activeColors.Count
                     };
@@ -115,7 +115,7 @@ namespace Sportur.Controllers
                 if (wholesalePrices.TryGetValue(v.Id, out var wholesale))
                     return wholesale;
 
-                return v.PriceOverride ?? model.BasePrice;
+                return model.Price;
             }
 
             var activeColors = model.Colors.Where(c => c.IsActive).ToList();

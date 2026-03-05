@@ -26,7 +26,7 @@
                 <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
                 <td>@(order.User?.Email ?? "Guest")</td>
                 <td>@order.Items.Count</td>
-                <td>@order.Items.Sum(i => i.Quantity * i.BicycleVariant.EffectivePrice) ₽</td>
+                <td>@order.TotalPrice ₽</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-primary btn-sm">
                         Подробнее

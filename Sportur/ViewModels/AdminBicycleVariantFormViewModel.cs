@@ -20,11 +20,6 @@ namespace Sportur.ViewModels
         public string FrameSize { get; set; }
 
         [Required]
-        [Range(0.01, 1000000)]
-        [Display(Name = "Цена")]
-        public decimal Price { get; set; }
-
-        [Required]
         [Range(0, 100000)]
         [Display(Name = "Остаток")]
         public int StockQuantity { get; set; }

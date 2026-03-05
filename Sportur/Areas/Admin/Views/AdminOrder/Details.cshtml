@@ -22,12 +22,12 @@
                 <td>@item.BicycleVariant.BicycleColor.BicycleModel.Brand @item.BicycleVariant.BicycleColor.BicycleModel.ModelName</td>
                 <td>@item.BicycleVariant.BicycleColor.Color</td>
                 <td>@item.BicycleVariant.FrameSize</td>
-                <td>@item.BicycleVariant.EffectivePrice ₽</td>
+                <td>@item.Price ₽</td>
                 <td>@item.Quantity</td>
-                <td>@(item.Quantity* item.BicycleVariant.EffectivePrice) ₽</td>
+                <td>@(item.Quantity * item.Price) ₽</td>
             </tr>
         }
     </tbody>
 </table>
 
-<h4>Общая сумма: @Model.Items.Sum(i => i.Quantity * i.BicycleVariant.EffectivePrice) ₽</h4>
+<h4>Общая сумма: @Model.TotalPrice ₽</h4>

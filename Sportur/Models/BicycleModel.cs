@@ -110,8 +110,8 @@ namespace Sportur.Models
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "Базовая цена")]
-        public decimal BasePrice { get; set; }
+        [Display(Name = "Цена")]
+        public decimal Price { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
