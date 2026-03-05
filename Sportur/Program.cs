@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
+using Sportur.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IPricingService, PricingService>();
 
 // Измените эту строку:
 builder.Services.AddDbContext<SporturDbContext>(options =>

@@ -17,8 +17,6 @@ namespace Sportur.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 
-        public DbSet<WholesalePrice> WholesalePrices { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -63,21 +61,6 @@ namespace Sportur.Context
                 .WithMany(v => v.OrderItems)
                 .HasForeignKey(oi => oi.BicycleVariantId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // WholesalePrice → Variant
-            modelBuilder.Entity<WholesalePrice>()
-                .HasOne(w => w.BicycleVariant)
-                .WithMany()
-                .HasForeignKey(w => w.BicycleVariantId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<WholesalePrice>()
-                .HasIndex(w => new
-                {
-                    w.BicycleVariantId,
-                    w.UserId
-                })
-                .IsUnique();
         }
     }
 }

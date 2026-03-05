@@ -14,6 +14,13 @@
     </div>
 }
 
+@if (TempData["CheckoutError"] is string checkoutError)
+{
+    <div class="alert alert-danger" role="alert">
+        @checkoutError
+    </div>
+}
+
 @if (!Model.Any())
 {
     <p>Корзина пуста</p>

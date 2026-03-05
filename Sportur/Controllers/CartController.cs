@@ -2,74 +2,65 @@
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
 using Sportur.Models.Cart;
+using Sportur.Services;
 
 namespace Sportur.Controllers
 {
     public class CartController : Controller
     {
         private readonly SporturDbContext _context;
-        private const string CartKey = "cart";
+        private readonly IPricingService _pricingService;
 
-        public CartController(SporturDbContext context)
+        private const string CartKey = "cart";
+        private const int WholesalePackSize = 5;
+
+        public CartController(SporturDbContext context, IPricingService pricingService)
         {
             _context = context;
+            _pricingService = pricingService;
         }
 
-        // Добавить в корзину
         [HttpPost]
         public IActionResult Add(int variantId)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-            var role = HttpContext.Session.GetString("UserRole");
+            var isWholesale = _pricingService.IsApprovedWholesaleUser(userId);
+            var quantityStep = isWholesale ? WholesalePackSize : 1;
 
             var variant = _context.BicycleVariants
                 .Include(v => v.BicycleColor)
-                .ThenInclude(c => c.BicycleModel)
-                .FirstOrDefault(v =>
-                    v.Id == variantId &&
-                    v.IsAvailable &&
-                    v.StockQuantity > 0);
+                    .ThenInclude(c => c.BicycleModel)
+                .FirstOrDefault(v => v.Id == variantId && v.IsAvailable && v.StockQuantity > 0);
 
             if (variant == null)
                 return BadRequest("Вариант недоступен");
 
-            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey)
-                       ?? new List<CartItem>();
-
+            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey) ?? new List<CartItem>();
             var item = cart.FirstOrDefault(x => x.VariantId == variantId);
 
-            var price = variant.BicycleColor.BicycleModel.Price;
-            if (userId.HasValue && role == UserRole.Wholesale.ToString())
-            {
-                price = _context.WholesalePrices
-                    .Where(w => w.UserId == userId.Value && w.BicycleVariantId == variant.Id)
-                    .Select(w => w.Price)
-                    .FirstOrDefault() switch
-                {
-                    0 => variant.BicycleColor.BicycleModel.Price,
-                    var wholesalePrice => wholesalePrice
-                };
-            }
+            var price = _pricingService.GetPrice(variant.BicycleColor.BicycleModel, userId);
 
             if (item != null)
             {
-                if (item.Quantity >= variant.StockQuantity)
+                if (item.Quantity + quantityStep > variant.StockQuantity)
                     return BadRequest("Недостаточно товара на складе");
 
-                item.Quantity++;
+                item.Quantity += quantityStep;
             }
             else
             {
+                if (variant.StockQuantity < quantityStep)
+                    return BadRequest("Недостаточно товара на складе");
+
                 cart.Add(new CartItem
                 {
                     VariantId = variant.Id,
-
-                    ModelName = variant.BicycleColor.BicycleModel.Brand + " " + variant.BicycleColor.BicycleModel.ModelName,
+                    ModelName = variant.BicycleColor.BicycleModel.Brand + " " +
+                                variant.BicycleColor.BicycleModel.ModelName,
                     Color = variant.BicycleColor.Color,
                     FrameSize = variant.FrameSize,
-
                     Price = price,
-                    Quantity = 1,
+                    Quantity = quantityStep,
                     StockQuantity = variant.StockQuantity,
                     PhotoUrl = variant.BicycleColor.PhotoUrl
                 });
@@ -79,21 +70,17 @@ namespace Sportur.Controllers
             return RedirectToAction("Index");
         }
 
-        // Корзина
         public IActionResult Index()
         {
-            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey)
-                       ?? new List<CartItem>();
-
+            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey) ?? new List<CartItem>();
             return View(cart);
         }
 
-        // Удалить позицию
         public IActionResult Remove(int variantId)
         {
             var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey) ?? new();
-
             var item = cart.FirstOrDefault(x => x.VariantId == variantId);
+
             if (item != null)
                 cart.Remove(item);
 
@@ -101,39 +88,41 @@ namespace Sportur.Controllers
             return RedirectToAction("Index");
         }
 
-        // Увеличить количество
         public IActionResult Increase(int variantId)
         {
-            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey)
-                       ?? new List<CartItem>();
-
+            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey) ?? new List<CartItem>();
             var item = cart.FirstOrDefault(x => x.VariantId == variantId);
+
             if (item == null)
                 return RedirectToAction("Index");
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var step = _pricingService.IsApprovedWholesaleUser(userId) ? WholesalePackSize : 1;
 
             var stock = _context.BicycleVariants
                 .Where(v => v.Id == variantId && v.IsAvailable)
                 .Select(v => v.StockQuantity)
                 .FirstOrDefault();
 
-            if (item.Quantity < stock)
-                item.Quantity++;
+            if (item.Quantity + step <= stock)
+                item.Quantity += step;
 
             HttpContext.Session.SetObject(CartKey, cart);
             return RedirectToAction("Index");
         }
 
-        // Уменьшить количество
         public IActionResult Decrease(int variantId)
         {
-            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey)
-                       ?? new List<CartItem>();
-
+            var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey) ?? new List<CartItem>();
             var item = cart.FirstOrDefault(x => x.VariantId == variantId);
+
             if (item == null)
                 return RedirectToAction("Index");
 
-            item.Quantity--;
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var step = _pricingService.IsApprovedWholesaleUser(userId) ? WholesalePackSize : 1;
+
+            item.Quantity -= step;
 
             if (item.Quantity <= 0)
                 cart.Remove(item);

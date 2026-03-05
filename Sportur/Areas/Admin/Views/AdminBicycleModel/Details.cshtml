@@ -6,7 +6,8 @@
 <h4>Основное</h4>
 <table class="table">
     <tr><th>Категория</th><td>@Html.DisplayFor(m => m.Category)</td></tr>
-    <tr><th>Цена</th><td>@Model.Price.ToString("N2") ₽</td></tr>
+    <tr><th>Розничная цена</th><td>@Model.RetailPrice.ToString("N2") ₽</td></tr>
+    <tr><th>Оптовая цена</th><td>@Model.WholesalePrice.ToString("N2") ₽</td></tr>
     <tr><th>Описание</th><td>@Model.Description</td></tr>
 </table>
 

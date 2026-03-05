@@ -76,7 +76,8 @@ namespace Sportur.Areas.Admin.Controllers
             existing.Rims = model.Rims;
             existing.Tires = model.Tires;
             existing.Accessories = model.Accessories;
-            existing.Price = model.Price;
+            existing.RetailPrice = model.RetailPrice;
+            existing.WholesalePrice = model.WholesalePrice;
 
             _context.SaveChanges();
 

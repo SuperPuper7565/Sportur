@@ -110,8 +110,13 @@ namespace Sportur.Models
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "Цена")]
-        public decimal Price { get; set; }
+        [Display(Name = "Розничная цена")]
+        public decimal RetailPrice { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "Оптовая цена")]
+        public decimal WholesalePrice { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
