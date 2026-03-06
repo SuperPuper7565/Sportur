@@ -1,25 +1,39 @@
 ﻿.catalog-header {
-    background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
-    border: 1px solid #e7efff;
-    border-radius: 16px;
-    padding: 20px;
+    background: linear-gradient(135deg, #3f474d 0%, #353c41 100%);
+    border: 1px solid #2f353a;
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: #fff;
 }
 
-.catalog-subtitle {
-    color: #6c757d;
+    .catalog-header h2 {
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+.catalog-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.catalog-sidebar {
+    position: sticky;
+    top: 20px;
 }
 
 .catalog-filters {
     background: #fff;
-    border: 1px solid #e9ecef;
+    border: 1px solid #dfe3e6;
     border-radius: 16px;
     padding: 16px;
-    box-shadow: 0 4px 18px rgba(16, 24, 40, 0.04);
+    box-shadow: 0 4px 18px rgba(16, 24, 40, 0.06);
 }
 
 .catalog-filters-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 12px;
 }
 
@@ -35,13 +49,13 @@
     display: block;
 }
 
-.catalog-link:hover {
-    text-decoration: none;
-    color: inherit;
-}
+    .catalog-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
 
 .catalog-card {
-    border: 1px solid #edf0f3;
+    border: 1px solid #e3e7ea;
     border-radius: 14px;
     overflow: hidden;
     cursor: pointer;
@@ -49,18 +63,18 @@
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.catalog-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
-}
+    .catalog-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 32px rgba(53, 60, 65, 0.2);
+    }
 
-.catalog-card:active {
-    transform: scale(0.99);
-}
+    .catalog-card:active {
+        transform: scale(0.99);
+    }
 
 .catalog-image-wrap {
-    background: #f8f9fa;
-    border-bottom: 1px solid #eef0f2;
+    background: #f5f6f7;
+    border-bottom: 1px solid #eceff1;
 }
 
 .catalog-image {
@@ -81,8 +95,8 @@
     padding: 3px 10px;
     border-radius: 999px;
     font-size: 0.78rem;
-    color: #2f5aa6;
-    background: #ebf2ff;
+    color: #fff;
+    background: #353c41;
 }
 
 .catalog-colors {
@@ -92,7 +106,7 @@
 .catalog-price {
     font-size: 1.35rem;
     font-weight: 800;
-    color: #0d6efd;
+    color: #d16134;
 }
 
 .catalog-empty {
@@ -101,4 +115,14 @@
     padding: 28px;
     text-align: center;
     background: #f8fafc;
+}
+
+@media (max-width: 991px) {
+    .catalog-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog-sidebar {
+        position: static;
+    }
 }

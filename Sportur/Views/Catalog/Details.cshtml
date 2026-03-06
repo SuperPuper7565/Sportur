@@ -26,7 +26,7 @@
         ← Назад к каталогу
     </a>
 
-    <p class="details-category text-muted">@Model.Category</p>
+    <p class="details-category text-muted">@Html.DisplayFor(m => m.Category)</p>
 
     <div class="row mt-4"
          id="catalogDetails"
@@ -85,44 +85,44 @@
                     </button>
                 </form>
             </div>
-
-            <div class="details-specs-card mt-4">
-                <h4>Характеристики</h4>
-
-                <table class="table table-sm table-bordered mb-0">
-                    <tbody>
-                        <tr><th>Диаметр колес</th><td>@Model.WheelDiameter</td></tr>
-                        <tr><th>Количество скоростей</th><td>@Model.GearCount</td></tr>
-                        <tr><th>Материал рамы</th><td>@Model.FrameMaterial</td></tr>
-                        <tr><th>Вилка</th><td>@Model.Fork</td></tr>
-                        <tr><th>Рулевая колонка</th><td>@Model.Headset</td></tr>
-                        <tr><th>Шифтеры</th><td>@Model.Shifters</td></tr>
-                        <tr><th>Передний переключатель</th><td>@Model.FrontDerailleur</td></tr>
-                        <tr><th>Задний переключатель</th><td>@Model.RearDerailleur</td></tr>
-                        <tr><th>Каретка</th><td>@Model.BottomBracket</td></tr>
-                        <tr><th>Система шатунов</th><td>@Model.Crankset</td></tr>
-                        <tr><th>Кассета / Трещотка</th><td>@Model.Cassette</td></tr>
-                        <tr><th>Цепь</th><td>@Model.Chain</td></tr>
-                        <tr><th>Тормоза</th><td>@Model.Brakes</td></tr>
-                        <tr><th>Тип тормоза</th><td>@Html.DisplayFor(m => m.BrakeType)</td></tr>
-                        <tr><th>Втулки</th><td>@Model.Hubs</td></tr>
-                        <tr><th>Обода</th><td>@Model.Rims</td></tr>
-                        <tr><th>Покрышки</th><td>@Model.Tires</td></tr>
-                        @if (!string.IsNullOrEmpty(Model.Accessories))
-                        {
-                            <tr><th>Дополнительное оборудование</th><td>@Model.Accessories</td></tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            @if (!string.IsNullOrEmpty(Model.Description))
-            {
-                <div class="details-description-card mt-4">
-                    <h4>Описание</h4>
-                    <p class="mb-0">@Model.Description</p>
-                </div>
-            }
         </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <div class="details-description-card mt-4">
+            <h4>Описание</h4>
+            <p class="mb-0">@Model.Description</p>
+        </div>
+    }
+
+    <div class="details-specs-card mt-4">
+        <h4>Характеристики</h4>
+
+        <table class="table table-sm table-bordered mb-0">
+            <tbody>
+                <tr><th>Диаметр колес</th><td>@Model.WheelDiameter</td></tr>
+                <tr><th>Количество скоростей</th><td>@Model.GearCount</td></tr>
+                <tr><th>Материал рамы</th><td>@Model.FrameMaterial</td></tr>
+                <tr><th>Вилка</th><td>@Model.Fork</td></tr>
+                <tr><th>Рулевая колонка</th><td>@Model.Headset</td></tr>
+                <tr><th>Шифтеры</th><td>@Model.Shifters</td></tr>
+                <tr><th>Передний переключатель</th><td>@Model.FrontDerailleur</td></tr>
+                <tr><th>Задний переключатель</th><td>@Model.RearDerailleur</td></tr>
+                <tr><th>Каретка</th><td>@Model.BottomBracket</td></tr>
+                <tr><th>Система шатунов</th><td>@Model.Crankset</td></tr>
+                <tr><th>Кассета / Трещотка</th><td>@Model.Cassette</td></tr>
+                <tr><th>Цепь</th><td>@Model.Chain</td></tr>
+                <tr><th>Тормоза</th><td>@Model.Brakes</td></tr>
+                <tr><th>Тип тормоза</th><td>@Html.DisplayFor(m => m.BrakeType)</td></tr>
+                <tr><th>Втулки</th><td>@Model.Hubs</td></tr>
+                <tr><th>Обода</th><td>@Model.Rims</td></tr>
+                <tr><th>Покрышки</th><td>@Model.Tires</td></tr>
+                @if (!string.IsNullOrEmpty(Model.Accessories))
+                {
+                    <tr><th>Дополнительное оборудование</th><td>@Model.Accessories</td></tr>
+                }
+            </tbody>
+        </table>
     </div>
 </section>

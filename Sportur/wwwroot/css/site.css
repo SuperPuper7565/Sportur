@@ -1,33 +1,60 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #d16134;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
+:root {
+    --sportur-dark: #353c41;
+    --sportur-accent: #d16134;
+}
+
+.btn-primary,
+.btn-success {
+    background-color: var(--sportur-accent);
+    border-color: var(--sportur-accent);
+}
+
+    .btn-primary:hover,
+    .btn-success:hover {
+        background-color: #ba592f;
+        border-color: #ba592f;
+    }
+
+.btn-outline-primary {
+    color: var(--sportur-dark);
+    border-color: var(--sportur-dark);
+}
+
+    .btn-outline-primary:hover {
+        background-color: var(--sportur-dark);
+        border-color: var(--sportur-dark);
+    }
+
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
 }
 
 header {
@@ -42,90 +69,73 @@ header {
 
 .admin-wrapper {
     display: flex;
-    min-height: 100vh;
-}
-
-.admin-sidebar {
-    width: 220px;
-    background: #222;
-    color: #fff;
-    padding: 20px;
-}
-
-.admin-sidebar a {
-    display: block;
-    color: #fff;
-    margin-bottom: 10px;
-    text-decoration: none;
 }
 
 .admin-content {
     flex: 1;
     padding: 20px;
 }
-/* Подсветка предупреждения об авторизации при попытке оформить заказ без входа. */
+
+/* Checkout warning */
 .checkout-auth-warning-attention {
     color: #b02a37;
     font-weight: 600;
 }
 
-/* ================================
-   Layout (Header, Footer, Main)
-   ================================ */
-
+/* Layout (Header, Footer, Main) */
 header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 15px 30px;
-    background-color: #1b6ec2;
+    background-color: #353c41;
     color: white;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     flex-wrap: wrap;
 }
 
-header .logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-}
+    header .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
 
-header nav {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
+    header nav {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
 
-header nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-}
+        header nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
 
-header nav a:hover {
-    color: #ffe600;
-}
+            header nav a:hover {
+                color: #d16134;
+            }
 
-header .auth {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    flex-wrap: wrap;
-}
+    header .auth {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
 
-header .auth a {
-    color: white;
-    text-decoration: none;
-    border: 1px solid white;
-    padding: 5px 12px;
-    border-radius: 6px;
-    transition: 0.2s;
-}
+        header .auth a {
+            color: white;
+            text-decoration: none;
+            border: 1px solid white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
 
-header .auth a:hover {
-    background-color: white;
-    color: #1b6ec2;
-}
+            header .auth a:hover {
+                background-color: white;
+                color: #353c41;
+            }
 
 main.container {
     margin-top: 20px;
@@ -134,7 +144,7 @@ main.container {
 }
 
 footer {
-    background-color: #1b6ec2;
+    background-color: #353c41;
     color: white;
     text-align: center;
     padding: 15px 0;
@@ -152,10 +162,10 @@ footer {
     cursor: pointer;
 }
 
-.auth-action-button:hover {
-    background-color: white;
-    color: #1b6ec2;
-}
+    .auth-action-button:hover {
+        background-color: white;
+        color: #353c41;
+    }
 
 .wholesale-popup-overlay {
     position: fixed;
@@ -180,15 +190,4 @@ footer {
 .wholesale-popup-close {
     position: absolute;
     top: 8px;
-    right: 10px;
-    border: none;
-    background: transparent;
-    font-size: 1.5rem;
-    line-height: 1;
-    color: #6b7280;
-    cursor: pointer;
-}
-
-.wholesale-popup-window p {
-    margin: 0;
 }

@@ -9,6 +9,7 @@ namespace Sportur.ViewModels
         public string Brand { get; set; }
         public string ModelName { get; set; }
         public BicycleCategory Category { get; set; }
+        public string CategoryDisplayName { get; set; }
 
         public string PreviewImageUrl { get; set; }
 

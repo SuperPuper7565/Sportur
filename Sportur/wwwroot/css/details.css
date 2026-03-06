@@ -5,6 +5,7 @@
 
 .details-category {
     font-size: 1rem;
+    color: #59646b;
 }
 
 #catalogDetails {
@@ -18,9 +19,9 @@
 .details-specs-card,
 .details-description-card {
     background: #fff;
-    border: 1px solid #e9ecef;
+    border: 1px solid #e3e7ea;
     border-radius: 16px;
-    box-shadow: 0 8px 28px rgba(16, 24, 40, 0.06);
+    box-shadow: 0 8px 28px rgba(53, 60, 65, 0.08);
 }
 
 .details-image-card {
@@ -29,7 +30,7 @@
 
 #catalogDetails img#bikeImage {
     border-radius: 12px;
-    background-color: #f8f9fa;
+    background-color: #f5f6f7;
     object-fit: contain;
     width: 100%;
     height: 380px;
@@ -47,11 +48,12 @@
     transition: all 0.2s ease;
 }
 
-#colors .color-btn:hover {
-    background-color: #0d6efd;
-    color: #fff;
-    border-color: #0d6efd;
-}
+    #colors .color-btn:hover,
+    #colors .color-btn.active {
+        background-color: #353c41;
+        color: #fff;
+        border-color: #353c41;
+    }
 
 #sizeSelect {
     max-width: 240px;
@@ -59,7 +61,7 @@
 
 #price {
     font-weight: 800;
-    color: #0d6efd;
+    color: #d16134;
     font-size: 1.5rem;
 }
 
@@ -78,7 +80,7 @@
 
 .table.table-bordered th {
     width: 220px;
-    background-color: #f6f8fb;
+    background-color: #f1f3f4;
     font-weight: 600;
 }
 
@@ -103,9 +105,9 @@
         flex-direction: column;
     }
 
-    #catalogDetails img#bikeImage {
-        height: 240px;
-    }
+        #catalogDetails img#bikeImage {
+            height: 240px;
+        }
 
     .details-buy-card,
     .details-specs-card,

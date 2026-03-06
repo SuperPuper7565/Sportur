@@ -4,6 +4,8 @@ using Sportur.Context;
 using Sportur.Models;
 using Sportur.Services;
 using Sportur.ViewModels;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Sportur.Controllers
 {
@@ -31,14 +33,10 @@ namespace Sportur.Controllers
 
             var query = _context.BicycleModels
                 .Include(m => m.Colors)
-                    .ThenInclude(c => c.Variants)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
-            {
-                var normalizedSearch = search.Trim();
-                query = query.Where(m => m.ModelName.Contains(normalizedSearch));
-            }
+                query = query.Where(m => m.ModelName.Contains(search));
 
             if (category.HasValue)
                 query = query.Where(m => m.Category == category.Value);
@@ -70,6 +68,7 @@ namespace Sportur.Controllers
                         Brand = m.Brand,
                         ModelName = m.ModelName,
                         Category = m.Category,
+                        CategoryDisplayName = GetEnumDisplayName(m.Category),
                         PreviewImageUrl = activeColors
                             .Select(c => c.PhotoUrl)
                             .FirstOrDefault(),
@@ -112,6 +111,13 @@ namespace Sportur.Controllers
             };
 
             return View(vm);
+        }
+
+        private static string GetEnumDisplayName<TEnum>(TEnum value) where TEnum : Enum
+        {
+            var member = typeof(TEnum).GetMember(value.ToString()).FirstOrDefault();
+            var displayAttribute = member?.GetCustomAttribute<DisplayAttribute>();
+            return displayAttribute?.GetName() ?? value.ToString();
         }
 
         public IActionResult Details(int id)
