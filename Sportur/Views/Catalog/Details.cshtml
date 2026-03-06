@@ -6,13 +6,15 @@
 }
 
 @{
-    var variantsJson = JsonSerializer.Serialize(Model.Variants, new JsonSerializerOptions
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    });
+    var variantsJson = JsonSerializer.Serialize(Model.Variants,
+        new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
 }
 
 <section class="details-page">
+
     <h2 id="bicycleVariantTitle"
         class="details-title"
         data-brand="@Model.Brand"
@@ -22,85 +24,105 @@
 
     <a asp-controller="Catalog"
        asp-action="Index"
-       class="btn btn-outline-primary mb-3">
+       class="btn btn-outline-primary details-back-btn">
         ← Назад к каталогу
     </a>
 
-    <p class="details-category text-muted">@Html.DisplayFor(m => m.Category)</p>
-
-    <div class="row mt-4"
-         id="catalogDetails"
+    <div id="catalogDetails"
          data-variants='@variantsJson'>
 
-        <div class="col-lg-6 mb-4 mb-lg-0">
-            <div class="details-image-card">
-                <img id="bikeImage"
-                     src="@(Model.Colors.FirstOrDefault()?.PhotoUrl ?? "/images/no-image.png")"
-                     class="img-fluid"
-                     alt="Фото велосипеда" />
-            </div>
+        <!-- ФОТО -->
+        <div class="details-image-card">
+
+            <img id="bikeImage"
+                 src="@(Model.Colors.FirstOrDefault()?.PhotoUrl ?? "/images/no-image.png")"
+                 alt="Фото велосипеда">
+
         </div>
 
-        <div class="col-lg-6">
-            <div class="details-buy-card">
-                <h4>Цвет</h4>
-                <div id="colors" class="mb-3">
-                    @foreach (var color in Model.Colors)
-                    {
-                        <button type="button"
-                                class="btn btn-outline-secondary me-2 mb-2 color-btn"
-                                data-color-id="@color.Id"
-                                data-photo="@color.PhotoUrl">
-                            @color.Color
-                        </button>
-                    }
+        <!-- БЛОК ПОКУПКИ -->
+
+        <div class="details-buy-card">
+
+            <p class="details-category text-muted">@Html.DisplayFor(m => m.Category)</p>
+
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div class="details-description">
+                    @Model.Description
                 </div>
+            }
 
-                <h4>Ростовка</h4>
-                <select id="sizeSelect" class="form-select mb-3">
-                    <option value="">Выберите размер</option>
-                    @foreach (var size in Model.Sizes)
-                    {
-                        <option value="@size">@size</option>
-                    }
-                </select>
+            <h4>Цвет</h4>
 
-                <h3 class="details-price-row">
-                    Цена: <span id="price">—</span> ₽
-                </h3>
+            <div id="colors">
 
-                <p id="stock" class="text-muted"></p>
+                @foreach (var color in Model.Colors)
+                {
+                    <button type="button"
+                            class="btn btn-outline-secondary me-2 mb-2 color-btn"
+                            data-color-id="@color.Id"
+                            data-photo="@color.PhotoUrl">
 
-                <form asp-controller="Cart"
-                      asp-action="Add"
-                      method="post">
+                        @color.Color
 
-                    <input type="hidden" name="variantId" id="variantId" />
-
-                    <button type="submit"
-                            id="addToCartBtn"
-                            class="btn btn-success"
-                            disabled>
-                        В корзину
                     </button>
-                </form>
+                }
+
             </div>
+
+            <h4>Ростовка</h4>
+
+            <select id="sizeSelect" class="form-select">
+
+                <option value="">Выберите размер</option>
+
+                @foreach (var size in Model.Sizes)
+                {
+                    <option value="@size">@size</option>
+                }
+
+            </select>
+
+            <h3 class="details-price-row">
+                Цена: <span id="price">—</span> ₽
+            </h3>
+
+            <p id="stock" class="text-muted"></p>
+
+            <form asp-controller="Cart"
+                  asp-action="Add"
+                  method="post">
+
+                <input type="hidden"
+                       name="variantId"
+                       id="variantId" />
+
+                <button type="submit"
+                        id="addToCartBtn"
+                        class="btn btn-success details-cart-btn"
+                        disabled>
+
+                    В корзину
+
+                </button>
+
+            </form>
+
         </div>
+
     </div>
 
-    @if (!string.IsNullOrEmpty(Model.Description))
-    {
-        <div class="details-description-card mt-4">
-            <h4>Описание</h4>
-            <p class="mb-0">@Model.Description</p>
-        </div>
-    }
+    <!-- ХАРАКТЕРИСТИКИ -->
 
-    <div class="details-specs-card mt-4">
-        <h4>Характеристики</h4>
+    <div class="details-specs-card">
+
+        <h4 class="mb-3">Характеристики</h4>
 
         <table class="table table-sm table-bordered mb-0">
+
             <tbody>
+
                 <tr><th>Диаметр колес</th><td>@Model.WheelDiameter</td></tr>
                 <tr><th>Количество скоростей</th><td>@Model.GearCount</td></tr>
                 <tr><th>Материал рамы</th><td>@Model.FrameMaterial</td></tr>
@@ -114,15 +136,20 @@
                 <tr><th>Кассета / Трещотка</th><td>@Model.Cassette</td></tr>
                 <tr><th>Цепь</th><td>@Model.Chain</td></tr>
                 <tr><th>Тормоза</th><td>@Model.Brakes</td></tr>
-                <tr><th>Тип тормоза</th><td>@Html.DisplayFor(m => m.BrakeType)</td></tr>
+                <tr><th>Тип тормоза</th><td>@Model.BrakeType</td></tr>
                 <tr><th>Втулки</th><td>@Model.Hubs</td></tr>
                 <tr><th>Обода</th><td>@Model.Rims</td></tr>
                 <tr><th>Покрышки</th><td>@Model.Tires</td></tr>
+
                 @if (!string.IsNullOrEmpty(Model.Accessories))
                 {
-                    <tr><th>Дополнительное оборудование</th><td>@Model.Accessories</td></tr>
+                    <tr><th>Дополнительно</th><td>@Model.Accessories</td></tr>
                 }
+
             </tbody>
+
         </table>
+
     </div>
+
 </section>

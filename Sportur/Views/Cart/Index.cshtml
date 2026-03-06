@@ -1,108 +1,120 @@
 ﻿@model List<Sportur.Models.Cart.CartItem>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+}
+
 @{
     var isAuthenticated = Context.Session.GetInt32("UserId") != null;
 }
 
-<h2>Корзина</h2>
+<section class="cart-page">
+    <h2 class="cart-title">Корзина</h2>
 
-@if (TempData["CheckoutAuthMessage"] is string checkoutAuthMessage)
-{
-    <div class="alert alert-warning" role="alert">
-        @checkoutAuthMessage
-        <a asp-controller="Account" asp-action="Login" class="alert-link">Войти в аккаунт</a>
-    </div>
-}
-
-@if (TempData["CheckoutError"] is string checkoutError)
-{
-    <div class="alert alert-danger" role="alert">
-        @checkoutError
-    </div>
-}
-
-@if (!Model.Any())
-{
-    <p>Корзина пуста</p>
-}
-else
-{
-    <table class="table align-middle">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Модель</th>
-                <th>Цвет</th>
-                <th>Ростовка</th>
-                <th>Цена</th>
-                <th class="text-center">Кол-во</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        <img src="@item.PhotoUrl" width="80" />
-                    </td>
-
-                    <td>@item.ModelName</td>
-                    <td>@item.Color</td>
-                    <td>@item.FrameSize</td>
-
-                    <td>
-                        @(item.Price* item.Quantity) ₽
-                    </td>
-
-                    <td class="text-center">
-                        <a asp-action="Decrease"
-                           asp-route-variantId="@item.VariantId"
-                           class="btn btn-sm btn-outline-secondary">
-                            −
-                        </a>
-
-                        <span class="mx-2">@item.Quantity</span>
-
-                        <a asp-action="Increase"
-                           asp-route-variantId="@item.VariantId"
-                           class="btn btn-sm btn-outline-secondary
-                                          @(item.Quantity >= item.StockQuantity ? "disabled" : "")">
-                            +
-                        </a>
-                    </td>
-
-                    <td>
-                        <a asp-action="Remove"
-                           asp-route-variantId="@item.VariantId"
-                           class="btn btn-sm btn-danger">
-                            ✕
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <h3 class="text-end">
-        Итого: <strong>@Model.Sum(x => x.Price * x.Quantity) ₽</strong>
-    </h3>
-
-    <form asp-controller="Order" asp-action="Checkout" method="post" id="checkoutForm" data-authenticated="@isAuthenticated.ToString().ToLowerInvariant()">
-        <button type="submit"
-                class="btn btn-success btn-lg"
-                id="checkoutBtn"
-                @(isAuthenticated ? null : "disabled")>
-            Оформить заказ
-        </button>
-    </form>
-
-    @if (!isAuthenticated)
+    @if (TempData["CheckoutAuthMessage"] is string checkoutAuthMessage)
     {
-        <p class="text-danger mt-2 mb-0" id="checkoutAuthWarning">
-            Для оформления заказа нужно
-            <a asp-controller="Account" asp-action="Login">войти</a>
-            в аккаунт.
-        </p>
+        <div class="alert alert-warning" role="alert">
+            @checkoutAuthMessage
+            <a asp-controller="Account" asp-action="Login" class="alert-link">Войти в аккаунт</a>
+        </div>
     }
-}
+
+    @if (TempData["CheckoutError"] is string checkoutError)
+    {
+        <div class="alert alert-danger" role="alert">
+            @checkoutError
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <p class="cart-empty">Корзина пуста</p>
+    }
+    else
+    {
+        <table class="table align-middle cart-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Модель</th>
+                    <th>Цвет</th>
+                    <th>Ростовка</th>
+                    <th>Цена</th>
+                    <th class="text-center">Кол-во</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.PhotoUrl" width="80" />
+                        </td>
+
+                        <td>@item.ModelName</td>
+                        <td>@item.Color</td>
+                        <td>@item.FrameSize</td>
+
+                        <td>
+                            @(item.Price* item.Quantity) ₽
+                        </td>
+
+                        <td class="text-center">
+                            <a asp-action="Decrease"
+                               asp-route-variantId="@item.VariantId"
+                               class="btn btn-sm btn-outline-secondary">
+                                −
+                            </a>
+
+                            <span class="mx-2">@item.Quantity</span>
+
+                            <a asp-action="Increase"
+                               asp-route-variantId="@item.VariantId"
+                               class="btn btn-sm btn-outline-secondary
+                                              @(item.Quantity >= item.StockQuantity ? "disabled" : "")">
+                                +
+                            </a>
+                        </td>
+
+                        <td>
+                            <a asp-action="Remove"
+                               asp-route-variantId="@item.VariantId"
+                               class="btn btn-sm btn-danger">
+                                ✕
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h3 class="text-end cart-total">
+            Итого: <strong>@Model.Sum(x => x.Price * x.Quantity) ₽</strong>
+        </h3>
+
+        <form asp-controller="Order"
+              asp-action="Checkout"
+              method="post"
+              id="checkoutForm"
+              data-authenticated="@isAuthenticated.ToString().ToLowerInvariant()"
+              class="cart-actions">
+
+            <button type="submit"
+                    class="btn btn-success btn-lg"
+                    id="checkoutBtn"
+                    @(isAuthenticated ? null : "disabled")>
+                Оформить заказ
+            </button>
+        </form>
+
+        @if (!isAuthenticated)
+        {
+            <p class="text-danger mt-2 mb-0" id="checkoutAuthWarning">
+                Для оформления заказа нужно
+                <a asp-controller="Account" asp-action="Login">войти</a>
+                в аккаунт.
+            </p>
+        }
+    }
+</section>

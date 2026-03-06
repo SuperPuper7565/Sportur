@@ -11,56 +11,125 @@
 
 <section class="catalog-layout">
     <aside class="catalog-sidebar">
+
         <form method="get" class="catalog-filters">
-            <input type="text" name="search" value="@Model.Search" class="form-control mb-3" placeholder="Поиск по названию" />
+
+            <div class="catalog-search">
+                <label class="form-label mb-0">Поиск</label>
+
+                <input type="text"
+                       name="search"
+                       value="@Model.Search"
+                       class="form-control"
+                       placeholder="Название велосипеда" />
+            </div>
+
 
             <div class="catalog-filters-grid">
-                <select name="category" class="form-select" asp-for="Category" asp-items="Html.GetEnumSelectList<BicycleCategory>()">
+
+                <select name="category"
+                        class="form-select"
+                        asp-for="Category"
+                        asp-items="Html.GetEnumSelectList<BicycleCategory>()">
+
                     <option value="">Все категории</option>
+
                 </select>
+
 
                 <select name="wheelDiameter" class="form-select">
+
                     <option value="">Все диаметры колес</option>
+
                     @foreach (var value in Model.AvailableWheelDiameters)
                     {
-                        <option value="@value" selected="@(value == Model.WheelDiameter ? "selected" : null)">@value</option>
+                        <option value="@value"
+                                selected="@(value == Model.WheelDiameter ? "selected" : null)">
+                            @value
+                        </option>
                     }
+
                 </select>
+
 
                 <select name="gearCount" class="form-select">
+
                     <option value="">Любое кол-во скоростей</option>
+
                     @foreach (var value in Model.AvailableGearCounts)
                     {
-                        <option value="@value" selected="@(value == Model.GearCount ? "selected" : null)">@value</option>
+                        <option value="@value"
+                                selected="@(value == Model.GearCount ? "selected" : null)">
+                            @value
+                        </option>
                     }
+
                 </select>
+
 
                 <select name="frameMaterial" class="form-select">
+
                     <option value="">Любой материал рамы</option>
+
                     @foreach (var value in Model.AvailableFrameMaterials)
                     {
-                        <option value="@value" selected="@(value == Model.FrameMaterial ? "selected" : null)">@value</option>
+                        <option value="@value"
+                                selected="@(value == Model.FrameMaterial ? "selected" : null)">
+                            @value
+                        </option>
                     }
+
                 </select>
 
-                <select name="brakeType" class="form-select" asp-for="BrakeType" asp-items="Html.GetEnumSelectList<BrakeType>()">
+
+                <select name="brakeType"
+                        class="form-select"
+                        asp-for="BrakeType"
+                        asp-items="Html.GetEnumSelectList<BrakeType>()">
+
                     <option value="">Любой тип тормоза</option>
+
                 </select>
+
 
                 <select name="brand" class="form-select">
+
                     <option value="">Все бренды</option>
+
                     @foreach (var value in Model.AvailableBrands)
                     {
-                        <option value="@value" selected="@(value == Model.Brand ? "selected" : null)">@value</option>
+                        <option value="@value"
+                                selected="@(value == Model.Brand ? "selected" : null)">
+                            @value
+                        </option>
                     }
+
                 </select>
+
             </div>
 
-            <div class="d-flex gap-2 mt-3">
-                <button type="submit" class="btn btn-primary">Применить</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Сбросить</a>
+
+            <div class="catalog-actions">
+
+                <button type="submit"
+                        class="btn btn-primary catalog-action-btn">
+
+                    Применить
+
+                </button>
+
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary catalog-action-btn catalog-action-btn-reset">
+
+                    Сбросить
+
+                </a>
+
             </div>
+
         </form>
+
     </aside>
 
     <div class="catalog-content">

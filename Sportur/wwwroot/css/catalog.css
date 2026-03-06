@@ -6,10 +6,10 @@
     color: #fff;
 }
 
-    .catalog-header h2 {
-        font-size: 1.35rem;
-        font-weight: 700;
-    }
+.catalog-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+}
 
 .catalog-layout {
     display: grid;
@@ -18,24 +18,67 @@
     align-items: start;
 }
 
+/* SIDEBAR */
+
 .catalog-sidebar {
     position: sticky;
     top: 20px;
 }
 
 .catalog-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
     background: #fff;
     border: 1px solid #dfe3e6;
     border-radius: 16px;
-    padding: 16px;
+    padding: 18px;
     box-shadow: 0 4px 18px rgba(16, 24, 40, 0.06);
 }
+
+/* ПОИСК */
+
+.catalog-search {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+/* ФИЛЬТРЫ */
 
 .catalog-filters-grid {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
+
+
+/* КНОПКИ */
+
+.catalog-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.catalog-action-btn {
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.catalog-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(53, 60, 65, 0.16);
+}
+
+.catalog-action-btn-reset:hover {
+    box-shadow: 0 6px 16px rgba(88, 102, 116, 0.18);
+}
+
+/* КАРТОЧКИ */
 
 .catalog-grid {
     display: grid;
@@ -49,10 +92,10 @@
     display: block;
 }
 
-    .catalog-link:hover {
-        text-decoration: none;
-        color: inherit;
-    }
+.catalog-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
 
 .catalog-card {
     border: 1px solid #e3e7ea;
@@ -63,14 +106,14 @@
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-    .catalog-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 14px 32px rgba(53, 60, 65, 0.2);
-    }
+.catalog-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 32px rgba(53, 60, 65, 0.2);
+}
 
-    .catalog-card:active {
-        transform: scale(0.99);
-    }
+.catalog-card:active {
+    transform: scale(0.99);
+}
 
 .catalog-image-wrap {
     background: #f5f6f7;
@@ -117,7 +160,10 @@
     background: #f8fafc;
 }
 
+/* MOBILE */
+
 @media (max-width: 991px) {
+
     .catalog-layout {
         grid-template-columns: 1fr;
     }

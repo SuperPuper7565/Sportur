@@ -1,2 +1,112 @@
 ﻿body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f8;
+    color: #1f2933;
+}
+
+.admin-wrapper {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+}
+
+.admin-sidebar {
+    background: linear-gradient(180deg, #30373c 0%, #23292e 100%);
+    color: #fff;
+    padding: 28px 20px;
+    box-shadow: 2px 0 20px rgba(26, 31, 36, 0.22);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.admin-sidebar h3 {
+    margin: 0 0 22px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.admin-sidebar a {
+    display: block;
+    color: #ecf1f5;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-sidebar a:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(3px);
+    color: #fff;
+}
+
+.admin-sidebar hr {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 20px 0;
+}
+
+.admin-content {
+    padding: 28px;
+}
+
+.admin-content h1,
+.admin-content h2,
+.admin-content h3 {
+    color: #2f363c;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.admin-content .table {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 26px rgba(31, 41, 51, 0.08);
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.admin-content .table thead th {
+    background: #eff2f5;
+    color: #3a434a;
+    font-weight: 600;
+    border-bottom: 1px solid #dde3e9;
+}
+
+.admin-content .table td,
+.admin-content .table th {
+    vertical-align: middle;
+    padding: 0.78rem 0.85rem;
+}
+
+.admin-content .form-control,
+.admin-content .form-select {
+    border-radius: 10px;
+    border-color: #d7dfe8;
+}
+
+.admin-content .btn {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+@media (max-width: 992px) {
+    .admin-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-sidebar {
+        position: static;
+        height: auto;
+    }
+
+    .admin-content {
+        padding: 20px;
+    }
 }

@@ -1,18 +1,41 @@
-﻿.details-title {
-    font-weight: 800;
-    margin-bottom: 0.5rem;
+﻿.details-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.details-category {
-    font-size: 1rem;
-    color: #59646b;
+/* заголовок */
+
+.details-title {
+    font-weight: 800;
+    margin-bottom: 4px;
 }
+
+/* кнопки */
+
+.details-back-btn {
+    align-self: flex-start;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.details-cart-btn {
+    border-radius: 12px;
+    font-weight: 700;
+    min-width: 180px;
+    box-shadow: 0 6px 16px rgba(209,97,52,0.25);
+}
+
+/* сетка */
 
 #catalogDetails {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: stretch;
 }
+
+/* карточки */
 
 .details-image-card,
 .details-buy-card,
@@ -21,102 +44,117 @@
     background: #fff;
     border: 1px solid #e3e7ea;
     border-radius: 16px;
-    box-shadow: 0 8px 28px rgba(53, 60, 65, 0.08);
+    box-shadow: 0 8px 28px rgba(53,60,65,0.08);
 }
+
+/* изображение */
 
 .details-image-card {
-    padding: 14px;
+    padding: 16px;
+    display: flex;
 }
 
-#catalogDetails img#bikeImage {
-    border-radius: 12px;
-    background-color: #f5f6f7;
-    object-fit: contain;
+#bikeImage {
     width: 100%;
-    height: 380px;
+    height: 100%;
+    min-height: 420px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f5f6f7;
     padding: 10px;
 }
 
-.details-buy-card,
-.details-specs-card,
-.details-description-card {
-    padding: 20px;
+/* блок покупки */
+
+.details-buy-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
+
+.details-category {
+    font-size: 0.95rem;
+    color: #59646b;
+    margin: 0;
+}
+
+.details-description {
+    font-size: 0.95rem;
+    color: #59646b;
+}
+
+/* цвета */
 
 #colors .color-btn {
     border-radius: 999px;
-    transition: all 0.2s ease;
+    transition: 0.2s;
 }
 
     #colors .color-btn:hover,
     #colors .color-btn.active {
-        background-color: #353c41;
-        color: #fff;
+        background: #353c41;
         border-color: #353c41;
+        color: #fff;
     }
 
+/* размер */
+
 #sizeSelect {
-    max-width: 240px;
+    max-width: 260px;
 }
+
+/* цена */
 
 #price {
     font-weight: 800;
     color: #d16134;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
 }
 
 .details-price-row {
-    margin-bottom: 0.5rem;
+    margin-top: 8px;
 }
 
-#stock {
-    font-size: 0.95rem;
-    color: #6c757d;
-}
+/* таблица характеристик */
 
-#addToCartBtn {
-    min-width: 180px;
+.details-specs-card {
+    padding: 24px;
 }
 
 .table.table-bordered th {
-    width: 220px;
-    background-color: #f1f3f4;
+    width: 240px;
+    background: #f1f3f4;
     font-weight: 600;
-}
-
-.table.table-bordered td {
-    background-color: #fff;
 }
 
 .table.table-sm th,
 .table.table-sm td {
-    padding: 0.58rem 0.75rem;
+    padding: 0.6rem 0.75rem;
     font-size: 0.92rem;
 }
 
+/* адаптив */
+
 @media (max-width: 992px) {
-    #catalogDetails img#bikeImage {
-        height: 300px;
+
+    #catalogDetails {
+        grid-template-columns: 1fr;
+    }
+
+    #bikeImage {
+        min-height: 320px;
     }
 }
 
-@media (max-width: 767px) {
-    #catalogDetails {
-        flex-direction: column;
+@media (max-width: 600px) {
+
+    #bikeImage {
+        min-height: 240px;
     }
 
-        #catalogDetails img#bikeImage {
-            height: 240px;
-        }
-
-    .details-buy-card,
-    .details-specs-card,
-    .details-description-card {
-        padding: 16px;
-    }
-
-    #sizeSelect {
+    #sizeSelect,
+    .details-cart-btn {
         width: 100%;
-        max-width: 100%;
     }
 }
