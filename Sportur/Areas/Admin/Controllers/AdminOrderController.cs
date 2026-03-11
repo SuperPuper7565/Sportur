@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Sportur.Context;
 using Sportur.Models;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 
@@ -11,6 +12,15 @@ namespace Sportur.Areas.Admin.Controllers
     public class AdminOrderController : Controller
     {
         private readonly SporturDbContext _context;
+
+        private static readonly HashSet<string> AllowedStatuses = new()
+        {
+            "Новый",
+            "В обработке",
+            "Отправлен",
+            "Выполнен",
+            "Отменён"
+        };
 
         public AdminOrderController(SporturDbContext context)
         {
@@ -41,6 +51,78 @@ namespace Sportur.Areas.Admin.Controllers
                 return NotFound();
 
             return View(order);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel(int id)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                return NotFound();
+
+            if (order.Status == "Выполнен")
+            {
+                TempData["OrderError"] = $"Нельзя отменить заказ #{order.Id}, так как он уже выполнен.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            order.Status = "Отменён";
+            _context.SaveChanges();
+            TempData["OrderMessage"] = $"Заказ #{order.Id} отменён.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Complete(int id)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                return NotFound();
+
+            if (order.Status == "Отменён")
+            {
+                TempData["OrderError"] = $"Нельзя завершить заказ #{order.Id}, так как он отменён.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            order.Status = "Выполнен";
+            _context.SaveChanges();
+            TempData["OrderMessage"] = $"Заказ #{order.Id} отмечен как выполненный.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateStatus(int id, string status)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                return NotFound();
+
+            if (string.IsNullOrWhiteSpace(status) || !AllowedStatuses.Contains(status))
+            {
+                TempData["OrderError"] = "Передан недопустимый статус заказа.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (order.Status == "Отменён" && status != "Отменён")
+            {
+                TempData["OrderError"] = $"Нельзя изменить статус заказа #{order.Id}, так как он отменён.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            order.Status = status;
+            _context.SaveChanges();
+            TempData["OrderMessage"] = $"Статус заказа #{order.Id} изменён на «{status}».";
+
+            return RedirectToAction(nameof(Index));
         }
 
         // =========================

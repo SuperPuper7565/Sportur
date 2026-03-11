@@ -2,6 +2,16 @@
 
 <h2>Список заказов</h2>
 
+@if (TempData["OrderMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["OrderMessage"]</div>
+}
+
+@if (TempData["OrderError"] != null)
+{
+    <div class="alert alert-danger">@TempData["OrderError"]</div>
+}
+
 <div class="mb-3">
     <a asp-action="ExportCsv" class="btn btn-success">Экспорт в CSV</a>
     <a asp-action="ExportJson" class="btn btn-outline-success">Экспорт в JSON</a>
@@ -15,7 +25,8 @@
             <th>Пользователь</th>
             <th>Количество позиций</th>
             <th>Сумма</th>
-            <th></th>
+            <th>Статус</th>
+            <th>Управление</th>
         </tr>
     </thead>
     <tbody>
@@ -27,10 +38,42 @@
                 <td>@(order.User?.Email ?? "Guest")</td>
                 <td>@order.Items.Count</td>
                 <td>@order.TotalPrice ₽</td>
+                <td>@order.Status</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-primary btn-sm">
+                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-primary btn-sm mb-1">
                         Подробнее
                     </a>
+
+                    <form asp-action="UpdateStatus" method="post" class="d-flex gap-1 mb-1">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@order.Id" />
+                        <select name="status" class="form-select form-select-sm">
+                            <option selected="@(order.Status == "Новый" ? "selected" : null)" value="Новый">Новый</option>
+                            <option selected="@(order.Status == "В обработке" ? "selected" : null)" value="В обработке">В обработке</option>
+                            <option selected="@(order.Status == "Отправлен" ? "selected" : null)" value="Отправлен">Отправлен</option>
+                            <option selected="@(order.Status == "Выполнен" ? "selected" : null)" value="Выполнен">Выполнен</option>
+                            <option selected="@(order.Status == "Отменён" ? "selected" : null)" value="Отменён">Отменён</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Изменить</button>
+                    </form>
+
+                    <div class="d-flex gap-1">
+                        <form asp-action="Complete" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@order.Id" />
+                            <button type="submit" class="btn btn-success btn-sm" @(order.Status == "Выполнен" || order.Status == "Отменён" ? "disabled" : null)>
+                                Выполнен
+                            </button>
+                        </form>
+
+                        <form asp-action="Cancel" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@order.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm" @(order.Status == "Отменён" || order.Status == "Выполнен" ? "disabled" : null)>
+                                Отменить
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }

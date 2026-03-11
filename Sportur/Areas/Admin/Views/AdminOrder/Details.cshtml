@@ -3,6 +3,38 @@
 <h2>Заказ #@Model.Id</h2>
 <p>Дата: @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
 <p>Пользователь: @(Model.User?.Email ?? "Guest")</p>
+<p>Статус: <strong>@Model.Status</strong></p>
+
+<div class="d-flex gap-2 mb-3">
+    <form asp-action="UpdateStatus" method="post" class="d-flex gap-2">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <select name="status" class="form-select">
+            <option selected="@(Model.Status == "Новый" ? "selected" : null)" value="Новый">Новый</option>
+            <option selected="@(Model.Status == "В обработке" ? "selected" : null)" value="В обработке">В обработке</option>
+            <option selected="@(Model.Status == "Отправлен" ? "selected" : null)" value="Отправлен">Отправлен</option>
+            <option selected="@(Model.Status == "Выполнен" ? "selected" : null)" value="Выполнен">Выполнен</option>
+            <option selected="@(Model.Status == "Отменён" ? "selected" : null)" value="Отменён">Отменён</option>
+        </select>
+        <button type="submit" class="btn btn-outline-secondary">Изменить статус</button>
+    </form>
+
+    <form asp-action="Complete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-success" @(Model.Status == "Выполнен" || Model.Status == "Отменён" ? "disabled" : null)>
+            Отметить как выполненный
+        </button>
+    </form>
+
+    <form asp-action="Cancel" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-danger" @(Model.Status == "Отменён" || Model.Status == "Выполнен" ? "disabled" : null)>
+            Отменить заказ
+        </button>
+    </form>
+</div>
 
 <table class="table table-bordered">
     <thead>
