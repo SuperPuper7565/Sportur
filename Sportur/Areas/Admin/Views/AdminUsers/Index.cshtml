@@ -10,7 +10,8 @@
             <th>Email</th>
             <th>Текущий тип</th>
             <th>Заявка на опт</th>
-            <th>Действие</th>
+            <th>Статус</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -51,6 +52,21 @@
                 </td>
 
                 <td>
+                    @if (user.Role == UserRole.Admin)
+                    {
+                        <span>-</span>
+                    }
+                    else if (user.IsBlocked)
+                    {
+                        <span class="text-danger">Заблокирован</span>
+                    }
+                    else
+                    {
+                        <span class="text-success">Активен</span>
+                    }
+                </td>
+
+                <td>
                     @if (user.Role != UserRole.Admin)
                     {
                         <form asp-action="ToggleBuyerType" method="post" class="d-inline">
@@ -58,12 +74,23 @@
                             <input type="hidden" name="id" value="@user.Id" />
 
                             <button type="submit"
-                                    class="btn btn-sm @(isApprovedWholesale ? "btn-outline-secondary" : "btn-primary")">
+                                    class="btn btn-sm @(isApprovedWholesale ? "btn-outline-secondary" : "btn-primary")"
+                                    @(user.IsBlocked ? "disabled" : null)>
                                 @(isApprovedWholesale
                                                         ? "Сделать розничным"
                                                         : hasPendingWholesaleRequest
                                                         ? "Одобрить и сделать оптовым"
                                                         : "Сделать оптовым")
+                            </button>
+                        </form>
+
+                        <form asp-action="ToggleBlock" method="post" class="d-inline ms-1">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@user.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-sm @(user.IsBlocked ? "btn-success" : "btn-outline-danger")">
+                                @(user.IsBlocked ? "Разблокировать" : "Заблокировать")
                             </button>
                         </form>
                     }

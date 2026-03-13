@@ -1,0 +1,53 @@
+﻿@model List<Sportur.ViewModels.OrderViewModel>
+@{
+    ViewData["Title"] = "Мои заказы";
+}
+
+<h1>Мои заказы</h1>
+
+@if (!Model.Any())
+{
+    <p>У вас пока нет оформленных заказов.</p>
+}
+else
+{
+    foreach (var order in Model)
+    {
+        <section class="order-card" style="margin-bottom:24px; padding:16px; border:1px solid #ddd; border-radius:8px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <strong>Заказ №@order.OrderId</strong>
+                <span>@order.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Модель</th>
+                        <th>Цвет</th>
+                        <th>Размер</th>
+                        <th>Цена</th>
+                        <th>Кол-во</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in order.Items)
+                    {
+                        <tr>
+                            <td>@item.ModelName</td>
+                            <td>@item.Color</td>
+                            <td>@item.FrameSize</td>
+                            <td>@item.Price.ToString("N2") ₽</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Total.ToString("N2") ₽</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div style="text-align:right; font-weight:700;">
+                Итого: @order.TotalPrice.ToString("N2") ₽
+            </div>
+        </section>
+    }
+}

@@ -30,4 +30,5 @@ public class User
     public UserRole Role { get; set; }
 
     public bool IsWholesaleApproved { get; set; }
+    public bool IsBlocked { get; set; }
 }

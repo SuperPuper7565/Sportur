@@ -31,6 +31,14 @@ namespace Sportur.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user?.IsBlocked == true)
+            {
+                HttpContext.Session.Clear();
+                TempData["CheckoutAuthMessage"] = "Ваш аккаунт заблокирован. Обратитесь к администратору.";
+                return RedirectToAction("Login", "Account");
+            }
+
             var cart = HttpContext.Session.GetObject<List<CartItem>>(CartKey);
             if (cart == null || !cart.Any())
                 return RedirectToAction("Index", "Cart");
@@ -100,6 +108,14 @@ namespace Sportur.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
                 return RedirectToAction("Login", "Account");
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user?.IsBlocked == true)
+            {
+                HttpContext.Session.Clear();
+                TempData["CheckoutAuthMessage"] = "Ваш аккаунт заблокирован. Обратитесь к администратору.";
+                return RedirectToAction("Login", "Account");
+            }
 
             var orders = _context.Orders
                 .Where(o => o.UserId == userId)

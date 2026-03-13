@@ -34,7 +34,7 @@
             {
                 <span>Привет, @Context.Session.GetString("UserName")</span>
 
-                <a asp-controller="Order" asp-action="My">Мои заказы</a>
+                <a asp-controller="Order" asp-action="MyOrders">Мои заказы</a>
 
                 @if (Context.Session.GetString("UserRole") == "Retail")
                 {

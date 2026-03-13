@@ -75,6 +75,12 @@ namespace Sportur.Controllers
                 return View();
             }
 
+            if (user.IsBlocked)
+            {
+                ModelState.AddModelError("", "Ваш аккаунт заблокирован. Обратитесь к администратору.");
+                return View();
+            }
+
             HttpContext.Session.SetInt32("UserId", user.Id);
             HttpContext.Session.SetString("UserRole", GetEffectiveRole(user).ToString());
             HttpContext.Session.SetString("UserName", user.Name);

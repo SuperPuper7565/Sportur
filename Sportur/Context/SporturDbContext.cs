@@ -9,11 +9,9 @@ namespace Sportur.Context
             : base(options) { }
 
         public DbSet<User> Users { get; set; }
-
         public DbSet<BicycleModel> BicycleModels { get; set; }
         public DbSet<BicycleColor> BicycleColors { get; set; }
         public DbSet<BicycleVariant> BicycleVariants { get; set; }
-
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 
