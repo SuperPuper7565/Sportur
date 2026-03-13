@@ -19,6 +19,15 @@
     font-weight: 600;
 }
 
+.details-back-btn:hover,
+.details-back-btn:focus,
+.details-back-btn:active {
+    background-color: transparent;
+    color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    box-shadow: none;
+}
+
 .details-cart-btn {
     border-radius: 12px;
     font-weight: 700;
@@ -73,15 +82,47 @@
     gap: 14px;
 }
 
-.details-category {
-    font-size: 0.95rem;
-    color: #59646b;
+.details-category-pill {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    align-self: flex-start;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #f5f7f8;
+    border: 1px solid #e3e7ea;
+}
+
+.details-category-label {
     margin: 0;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #5b6670;
+}
+
+.details-category-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #353c41;
 }
 
 .details-description {
+    font-size: 0.96rem;
+    color: #4f5a61;
+    background: #f9fafb;
+    border: 1px solid #e9edf0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    line-height: 1.55;
+}
+
+.details-description-title {
+    margin: 0 0 8px;
     font-size: 0.95rem;
-    color: #59646b;
+    font-weight: 700;
+    color: #353c41;
 }
 
 /* цвета */

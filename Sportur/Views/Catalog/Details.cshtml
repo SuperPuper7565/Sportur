@@ -44,11 +44,15 @@
 
         <div class="details-buy-card">
 
-            <p class="details-category text-muted">@Html.DisplayFor(m => m.Category)</p>
+            <div class="details-category-pill">
+                <span class="details-category-label">Тип велосипеда</span>
+                <span class="details-category-value">@Html.DisplayFor(m => m.Category)</span>
+            </div>
 
             @if (!string.IsNullOrEmpty(Model.Description))
             {
                 <div class="details-description">
+                    <h5 class="details-description-title">Описание</h5>
                     @Model.Description
                 </div>
             }
@@ -136,7 +140,7 @@
                 <tr><th>Кассета / Трещотка</th><td>@Model.Cassette</td></tr>
                 <tr><th>Цепь</th><td>@Model.Chain</td></tr>
                 <tr><th>Тормоза</th><td>@Model.Brakes</td></tr>
-                <tr><th>Тип тормоза</th><td>@Model.BrakeType</td></tr>
+                <tr><th>Тип тормоза</th><td>@Html.DisplayFor(m => m.BrakeType)</td></tr>
                 <tr><th>Втулки</th><td>@Model.Hubs</td></tr>
                 <tr><th>Обода</th><td>@Model.Rims</td></tr>
                 <tr><th>Покрышки</th><td>@Model.Tires</td></tr>
