@@ -36,6 +36,8 @@
 
                 <a asp-controller="Order" asp-action="MyOrders">Мои заказы</a>
 
+                <a asp-controller="Cart" asp-action="Index">Корзина</a>
+
                 @if (Context.Session.GetString("UserRole") == "Retail")
                 {
                     var isWholesalePending = Context.Session.GetInt32("WholesalePending") == 1;

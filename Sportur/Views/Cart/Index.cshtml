@@ -9,7 +9,10 @@
 }
 
 <section class="cart-page">
-    <h2 class="cart-title">Корзина</h2>
+    <div class="cart-header">
+        <h2 class="cart-title">Корзина</h2>
+        <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-secondary cart-back-btn">← Назад к каталогу</a>
+    </div>
 
     @if (TempData["CheckoutAuthMessage"] is string checkoutAuthMessage)
     {
