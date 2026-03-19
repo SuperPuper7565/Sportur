@@ -2,12 +2,12 @@
 
 <h2>Редактировать цвет</h2>
 
-<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" enctype="multipart/form-data">
+<form asp-action="@ViewContext.RouteData.Values["action"]" method="post" enctype="multipart/form-data" class="admin-entity-form">
     <input asp-for="Id" type="hidden" />
 
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger admin-form-full-width"></div>
 
-    <div class="mb-3">
+    <div class="admin-form-row">
         <label asp-for="BicycleModelId" class="form-label"></label>
         <select asp-for="BicycleModelId" class="form-select">
             <option value="">-- выберите модель --</option>
@@ -20,27 +20,30 @@
         </select>
     </div>
 
-    <div class="mb-3">
+    <div class="admin-form-row">
         <label asp-for="Color" class="form-label"></label>
         <input asp-for="Color" class="form-control" />
     </div>
 
-    <div class="mb-3">
+    <div class="admin-form-row">
         <label asp-for="PhotoFile" class="form-label">Фото (файл)</label>
         <input asp-for="PhotoFile" type="file" class="form-control" />
     </div>
 
     @if (!string.IsNullOrEmpty(Model.PhotoUrl))
     {
-        <div class="mb-3">
-            <label>Текущее фото:</label><br />
-            <img src="@Model.PhotoUrl" alt="Фото цвета" style="max-width:200px;" />
+        <div class="admin-form-row admin-form-row--media">
+            <label class="form-label">Текущее фото</label>
+            <div>
+                <img src="@Model.PhotoUrl" alt="Фото цвета" style="max-width:200px;" />
+            </div>
         </div>
     }
 
-    <button type="submit" class="btn @(ViewContext.RouteData.Values["action"].ToString() == "Edit" ? "btn-warning" : "btn-success")">
-        @(ViewContext.RouteData.Values["action"].ToString() == "Edit" ? "Сохранить" : "Создать")
-    </button>
-    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+    <div class="admin-form-actions admin-form-full-width">
+        <button type="submit" class="btn @(ViewContext.RouteData.Values["action"].ToString() == "Edit" ? "btn-warning" : "btn-success")">
+            @(ViewContext.RouteData.Values["action"].ToString() == "Edit" ? "Сохранить" : "Создать")
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+    </div>
 </form>
-

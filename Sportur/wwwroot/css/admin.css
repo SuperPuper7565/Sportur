@@ -91,22 +91,97 @@
     border-color: #d7dfe8;
 }
 
+.admin-content .admin-bike-form {
+    max-width: 760px;
+}
+
+.admin-content .admin-bike-form .form-label {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.admin-content .admin-bike-form .admin-text-block {
+    min-height: 120px;
+    line-height: 1.45;
+    resize: vertical;
+}
+
 .admin-content .btn {
     border-radius: 10px;
     font-weight: 600;
 }
 
-@media (max-width: 992px) {
-    .admin-wrapper {
+.admin-entity-form {
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) minmax(0, 520px);
+    gap: 16px 20px;
+    align-items: start;
+    max-width: 860px;
+}
+
+.admin-form-row {
+    display: contents;
+}
+
+    .admin-form-row > .form-label {
+        margin: 0;
+        font-weight: 600;
+        padding-top: 0.7rem;
+    }
+
+    .admin-form-row > .form-control,
+    .admin-form-row > .form-select,
+    .admin-form-row > div {
+        width: 100%;
+    }
+
+.admin-form-row--textarea > .form-label,
+.admin-form-row--media > .form-label {
+    padding-top: 0.7rem;
+}
+
+.admin-form-row--checkbox > .form-label {
+    padding-top: 0.35rem;
+}
+
+.admin-form-row--checkbox .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 42px;
+    margin: 0;
+}
+
+.admin-form-row--checkbox .form-check-input {
+    margin: 0;
+}
+
+.admin-form-row--checkbox .form-check-label {
+    margin: 0;
+}
+
+.admin-form-full-width {
+    grid-column: 1 / -1;
+}
+
+.admin-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+@media (max-width: 768px) {
+    .admin-entity-form {
         grid-template-columns: 1fr;
+        max-width: 100%;
     }
 
-    .admin-sidebar {
-        position: static;
-        height: auto;
+    .admin-form-row {
+        display: grid;
+        gap: 8px;
     }
 
-    .admin-content {
-        padding: 20px;
-    }
+        .admin-form-row > .form-label {
+            padding-top: 0;
+        }
 }

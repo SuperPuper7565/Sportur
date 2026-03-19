@@ -2,11 +2,10 @@
 
 <h2>Добавить вариант</h2>
 
-<form asp-action="Create" method="post" data-variant-form="true">
-    <div asp-validation-summary="All" class="text-danger"></div>
+<form asp-action="Create" method="post" data-variant-form="true" class="admin-entity-form">
+    <div asp-validation-summary="All" class="text-danger admin-form-full-width"></div>
 
-    <!-- Модель -->
-    <div class="mb-3">
+    <div class="admin-form-row">
         <label asp-for="BicycleModelId" class="form-label"></label>
         <select asp-for="BicycleModelId"
                 class="form-select"
@@ -22,8 +21,7 @@
         </select>
     </div>
 
-    <!-- Цвет -->
-    <div class="mb-3">
+    <div class="admin-form-row">
         <label asp-for="BicycleColorId" class="form-label"></label>
         <select asp-for="BicycleColorId"
                 class="form-select"
@@ -32,23 +30,26 @@
         </select>
     </div>
 
-    <!-- Размер -->
-    <div class="mb-3">
+    <div class="admin-form-row">
         <label asp-for="FrameSize" class="form-label"></label>
         <input asp-for="FrameSize" class="form-control" />
     </div>
 
-    <!-- Количество -->
-    <div class="mb-3">
+    <div class="admin-form-row">
         <label asp-for="StockQuantity" class="form-label"></label>
         <input asp-for="StockQuantity" type="number" class="form-control" />
     </div>
 
-    <div class="form-check mb-3">
-        <input asp-for="IsAvailable" class="form-check-input" />
-        <label asp-for="IsAvailable" class="form-check-label"></label>
+    <div class="admin-form-row admin-form-row--checkbox">
+        <label asp-for="IsAvailable" class="form-label"></label>
+        <div class="form-check">
+            <input asp-for="IsAvailable" class="form-check-input" />
+            <label asp-for="IsAvailable" class="form-check-label"></label>
+        </div>
     </div>
 
-    <button type="submit" class="btn btn-success">Создать</button>
-    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+    <div class="admin-form-actions admin-form-full-width">
+        <button type="submit" class="btn btn-success">Создать</button>
+        <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+    </div>
 </form>

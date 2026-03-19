@@ -3,66 +3,142 @@
 
 <h2>Добавить велосипед</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" class="admin-entity-form">
 
-    <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger admin-form-full-width"></div>
 
-    <h4>Основное</h4>
+    <h4 class="admin-form-full-width">Основное</h4>
 
-    <div>
-        <label asp-for="Brand"></label>
-        <input asp-for="Brand" />
+    <div class="admin-form-row">
+        <label asp-for="Brand" class="form-label"></label>
+        <input asp-for="Brand" class="form-control" />
     </div>
 
-    <div>
-        <label asp-for="ModelName"></label>
-        <input asp-for="ModelName" />
+    <div class="admin-form-row">
+        <label asp-for="ModelName" class="form-label"></label>
+        <input asp-for="ModelName" class="form-control" />
     </div>
 
-    <div>
-        <label asp-for="Category"></label>
+    <div class="admin-form-row">
+        <label asp-for="Category" class="form-label"></label>
         <select asp-for="Category"
+                class="form-select"
                 asp-items="Html.GetEnumSelectList<BicycleCategory>()">
         </select>
     </div>
 
-    <div>
-        <label asp-for="RetailPrice"></label>
-        <input asp-for="RetailPrice" type="number" step="0.01" />
+    <div class="admin-form-row">
+        <label asp-for="RetailPrice" class="form-label"></label>
+        <input asp-for="RetailPrice" class="form-control" type="number" step="0.01" />
     </div>
 
-    <div>
-        <label asp-for="WholesalePrice"></label>
-        <input asp-for="WholesalePrice" type="number" step="0.01" />
+    <div class="admin-form-row">
+        <label asp-for="WholesalePrice" class="form-label"></label>
+        <input asp-for="WholesalePrice" class="form-control" type="number" step="0.01" />
     </div>
 
-    <div>
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description"></textarea>
+    <div class="admin-form-row admin-form-row--textarea">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
     </div>
 
-    <hr />
+    <hr class="admin-form-full-width" />
 
-    <h4>Характеристики</h4>
+    <h4 class="admin-form-full-width">Характеристики</h4>
 
-    <div><label asp-for="WheelDiameter"></label><input asp-for="WheelDiameter" /></div>
-    <div><label asp-for="GearCount"></label><input asp-for="GearCount" type="number" /></div>
-    <div><label asp-for="FrameMaterial"></label><input asp-for="FrameMaterial" /></div>
-    <div><label asp-for="Fork"></label><input asp-for="Fork" /></div>
-    <div><label asp-for="Headset"></label><input asp-for="Headset" /></div>
-    <div><label asp-for="Shifters"></label><input asp-for="Shifters" /></div>
-    <div><label asp-for="FrontDerailleur"></label><input asp-for="FrontDerailleur" /></div>
-    <div><label asp-for="RearDerailleur"></label><input asp-for="RearDerailleur" /></div>
-    <div><label asp-for="BottomBracket"></label><input asp-for="BottomBracket" /></div>
-    <div><label asp-for="Crankset"></label><input asp-for="Crankset" /></div>
-    <div><label asp-for="Cassette"></label><input asp-for="Cassette" /></div>
-    <div><label asp-for="Chain"></label><input asp-for="Chain" /></div>
-    <div><label asp-for="Brakes"></label><input asp-for="Brakes" /></div>
-    <div><label asp-for="BrakeType"></label><select asp-for="BrakeType" asp-items="Html.GetEnumSelectList<BrakeType>()"></select></div>
-    <div><label asp-for="Hubs"></label><input asp-for="Hubs" /></div>
-    <div><label asp-for="Rims"></label><input asp-for="Rims" /></div>
-    <div><label asp-for="Tires"></label><input asp-for="Tires" /></div>
-    <div><label asp-for="Accessories"></label><textarea asp-for="Accessories"></textarea></div>
+    <div class="admin-form-row">
+        <label asp-for="WheelDiameter" class="form-label"></label>
+        <input asp-for="WheelDiameter" class="form-control" />
+    </div>
 
-    <button type="submit">Создать</button>
+    <div class="admin-form-row">
+        <label asp-for="GearCount" class="form-label"></label>
+        <input asp-for="GearCount" class="form-control" type="number" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="FrameMaterial" class="form-label"></label>
+        <input asp-for="FrameMaterial" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Fork" class="form-label"></label>
+        <input asp-for="Fork" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Headset" class="form-label"></label>
+        <input asp-for="Headset" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Shifters" class="form-label"></label>
+        <input asp-for="Shifters" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="FrontDerailleur" class="form-label"></label>
+        <input asp-for="FrontDerailleur" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="RearDerailleur" class="form-label"></label>
+        <input asp-for="RearDerailleur" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="BottomBracket" class="form-label"></label>
+        <input asp-for="BottomBracket" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Crankset" class="form-label"></label>
+        <input asp-for="Crankset" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Cassette" class="form-label"></label>
+        <input asp-for="Cassette" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Chain" class="form-label"></label>
+        <input asp-for="Chain" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Brakes" class="form-label"></label>
+        <input asp-for="Brakes" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="BrakeType" class="form-label"></label>
+        <select asp-for="BrakeType" class="form-select"
+                asp-items="Html.GetEnumSelectList<BrakeType>()"></select>
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Hubs" class="form-label"></label>
+        <input asp-for="Hubs" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Rims" class="form-label"></label>
+        <input asp-for="Rims" class="form-control" />
+    </div>
+
+    <div class="admin-form-row">
+        <label asp-for="Tires" class="form-label"></label>
+        <input asp-for="Tires" class="form-control" />
+    </div>
+
+    <div class="admin-form-row admin-form-row--textarea">
+        <label asp-for="Accessories" class="form-label"></label>
+        <textarea asp-for="Accessories" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="admin-form-actions admin-form-full-width">
+        <button type="submit" class="btn btn-success">Создать</button>
+        <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+    </div>
 </form>

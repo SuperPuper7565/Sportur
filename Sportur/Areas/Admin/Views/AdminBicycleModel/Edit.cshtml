@@ -3,7 +3,7 @@
 
 <h2>Редактирование модели</h2>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="admin-bike-form">
     <input type="hidden" asp-for="Id" />
 
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
@@ -40,7 +40,7 @@
 
     <div class="mb-3">
         <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <textarea asp-for="Description" class="form-control admin-text-block" rows="4"></textarea>
     </div>
 
     <hr />
@@ -136,7 +136,7 @@
 
     <div class="mb-3">
         <label asp-for="Accessories" class="form-label"></label>
-        <textarea asp-for="Accessories" class="form-control" rows="3"></textarea>
+        <textarea asp-for="Accessories" class="form-control admin-text-block" rows="3"></textarea>
     </div>
 
     <button type="submit" class="btn btn-success">Сохранить</button>
