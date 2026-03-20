@@ -112,36 +112,31 @@
 }
 
 .admin-entity-form {
-    display: grid;
-    grid-template-columns: minmax(180px, 240px) minmax(0, 520px);
-    gap: 16px 20px;
-    align-items: start;
     max-width: 860px;
 }
 
 .admin-form-row {
-    display: contents;
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) minmax(0, 520px);
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 16px;
 }
 
-    .admin-form-row > .form-label {
-        margin: 0;
-        font-weight: 600;
-        padding-top: 0.7rem;
-    }
-
-    .admin-form-row > .form-control,
-    .admin-form-row > .form-select,
-    .admin-form-row > div {
-        width: 100%;
-    }
-
-.admin-form-row--textarea > .form-label,
-.admin-form-row--media > .form-label {
-    padding-top: 0.7rem;
+.admin-form-row > .form-label {
+    margin: 0;
+    font-weight: 600;
 }
 
-.admin-form-row--checkbox > .form-label {
-    padding-top: 0.35rem;
+.admin-form-row > .form-control,
+.admin-form-row > .form-select,
+.admin-form-row > div {
+    width: 100%;
+}
+
+.admin-form-row--textarea,
+.admin-form-row--media {
+    align-items: start;
 }
 
 .admin-form-row--checkbox .form-check {
@@ -161,27 +156,77 @@
 }
 
 .admin-form-full-width {
-    grid-column: 1 / -1;
+    width: 100%;
+    margin-bottom: 16px;
 }
 
 .admin-form-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+    margin-top: 8px;
 }
 
 @media (max-width: 768px) {
     .admin-entity-form {
-        grid-template-columns: 1fr;
         max-width: 100%;
     }
 
     .admin-form-row {
-        display: grid;
+        grid-template-columns: 1fr;
         gap: 8px;
     }
+}
 
-        .admin-form-row > .form-label {
-            padding-top: 0;
-        }
+.admin-order-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    font-weight: 600;
+}
+
+.admin-order-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    min-width: 240px;
+}
+
+.admin-order-actions__details {
+    width: 100%;
+}
+
+.admin-order-status-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+}
+
+.admin-order-status-form .btn {
+    white-space: nowrap;
+}
+
+.admin-order-detail-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.admin-order-status-form--detail {
+    min-width: min(100%, 420px);
+}
+
+@media (max-width: 768px) {
+    .admin-order-actions {
+        min-width: 0;
+    }
+
+    .admin-order-status-form,
+    .admin-order-status-form--detail {
+        grid-template-columns: 1fr;
+    }
 }
